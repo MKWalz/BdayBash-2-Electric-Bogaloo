@@ -6,17 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Score extends Model
 {
- //    public function game(){//Verbindung zu PostTabelle, 
+    public function game(){//Verbindung zu PostTabelle, 
 
-	// return $this -> belongsTo(Game::class);
+	return $this -> belongsTo(Game::class);
 
-	// }
+	}
 
-	// public function player(){//Verbindung zu PostTabelle, 
+	public function player(){//Verbindung zu PostTabelle, 
 
-	// 	return $this -> belongsTo(Player::class);
+		return $this -> belongsTo(Player::class);
 
-	// }
+	}
 
 
 

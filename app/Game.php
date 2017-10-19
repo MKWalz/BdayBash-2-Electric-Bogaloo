@@ -8,7 +8,7 @@ class Game extends Model
 {
 	protected $fillable = ['name', 'instructions','gametype', 'live', 'award_ceremony', 'repeatable'];
 
-    public function player(){ // Verbindung zu Score
-		return $this->belongsToMany(Player::class)->withTimestamps();
+    public function score(){ // Verbindung zu Score
+		return $this->belongsToMany(Score::class)->withTimestamps();
 	}
 }
