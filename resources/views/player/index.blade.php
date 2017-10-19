@@ -11,7 +11,7 @@
 						<a href="/player/{{$player->id}}"> 
 							<h2>{{$player->id}}. - {{$player->name}}</h2>
 						</a>
-
+						
 				</p>
 
 
