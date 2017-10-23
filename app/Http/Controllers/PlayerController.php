@@ -7,17 +7,52 @@ use App\Player;
 
 class PlayerController extends Controller
 {
-    public function index(Player $players){
+	    public function index(Player $players){
 
-    	$players = $players->all();
+	    	
+	    	//$players = $players->game;
 
-		return view("player.index" , compact('players'));
+	  		  $players = $players->all();
 
-	}
+			 return view("player.index" , compact('players'));
 
-	public function show(Player $player){
+		}
 
-	return view("player.show", compact('player'));		
 
-	}
+		public function show(Player $player){
+
+		$games = $player->game;
+
+
+		return view("player.show", compact('player', 'games'));		
+
+		}
+
+		public function form(){
+
+		return view("player.form");		
+
+		}
+
+
+		public function store(){
+
+		$this->validate(request(), [
+
+			'name' => 'required',	
+
+		]);
+
+
+		Player::create([
+
+			'name' => request('name'),
+
+
+		]);
+
+		return redirect('player');
+
+		}
+
 }

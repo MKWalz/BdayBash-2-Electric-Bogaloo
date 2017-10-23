@@ -12,6 +12,8 @@
         
       	@yield('content')   
 
+      	@include('layout.errorshow')
+
 </body>
 
 </html>

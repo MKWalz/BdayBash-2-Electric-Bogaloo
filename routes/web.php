@@ -28,5 +28,8 @@ Route::delete('/admin/{game}', 'AdminController@delete');
 
 
 
-
+Route::get('/player/form', 'PlayerController@form');
 Route::resource('player', 'PlayerController');
+
+
+Route::get('/listdata/{game}', 'ListController@show');

@@ -41,6 +41,8 @@ class AdminController extends Controller
 	public function update(Request $request, $id)
 	{
 
+	
+
 	$data = $this->checkCheckbox($request);
 
     $update = Game::find($id);
@@ -70,6 +72,8 @@ class AdminController extends Controller
 
 
 	public function store(Request $request){
+		
+		$this->validate(request(), ['name' => 'required|min:2']);
 
         $data = $this->checkCheckbox($request);
             	

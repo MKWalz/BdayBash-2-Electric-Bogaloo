@@ -16,7 +16,11 @@ Hallo
 				<h2>{{$game->id}}. - {{$game->name}}</h2>
 			</a>
 
-			{{$game->instructions}}	<br>
+		 {{$game->instructions}}	<br>
+
+		 <a href="/listdata/{{$game->id}}"> 
+				<h2>Top 5</h2>
+			</a>
 			
 	_______________
 	</p>
