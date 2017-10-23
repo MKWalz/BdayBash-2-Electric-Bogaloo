@@ -106,22 +106,16 @@ class AdminController extends Controller
 
 	public function altstore(Request $request){
 		
-		$this->validate(request(), [
-			'name' => 'required|min:2',
-			'game_nr' => 'required | numeric',
-		]);
+	$new = new Game;
+    $new->name = request('name');
+    $new->game_nr = request('game_nr');
+	$new->instructions = request('instructions');
+	$new->gametype = request('gametype');
+ 	$new->live = $request->has('live');
+	$new->award_ceremony = $request->has('award_ceremony');
+	$new->repeatable = $request->has('repeatable');
 
-        $data = $this->checkCheckbox($request);
-            	
-		Game::create([
-			'name' => request('name'),
-			'game_nr' => request('game_nr'),
-			'instructions' => request('instructions'),
-			'gametype' => request('gametype'),
- 			'live' => $data[0],
-			'award_ceremony' => $data[1],
-			'repeatable' => $data[2],
-		]);
+	$new->save();
 		
 		return redirect()->home();
 
