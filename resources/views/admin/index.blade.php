@@ -4,29 +4,35 @@
 @section('content')
 
 
-Hallo
-<a href="/admin/form">Erzeuge neues Game<a/>
+	@if (Auth::check())
+		Hallo {{Auth::user()->name}}
+	@endif
+
+<br/>
+<a href="/admin/form">Erzeuge neues Game<a/>&emsp;<a href="/admin/login">Login</a>
 
 @foreach($games as $game)
-<div style="padding-left: 20px">
 
-	<p>
+	<div style="padding-left: 20px">
 
-			<a href="/admin/{{$game->id}}"> 
-				<h2>{{$game->id}}. - {{$game->name}}</h2>
-			</a>
+		<p>
 
-		 {{$game->instructions}}	<br>
+				<a href="/admin/{{$game->id}}"> 
+					<h2>{{$game->game_nr}}. - {{$game->name}}</h2>
+				</a>
 
-		 <a href="/listdata/{{$game->id}}"> 
-				<h2>Top 5</h2>
-			</a>
-			
-	_______________
-	</p>
+			 {{$game->instructions}}	<br>
+
+			 <a href="/listdata/{{$game->id}}"> 
+					<h2>Top 5</h2>
+				</a>
+				
+		_______________
+		</p>
 
 
-</div>
+	</div>
+
 @endforeach
 
 

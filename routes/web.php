@@ -19,7 +19,14 @@ Route::get('/admin', 'AdminController@index')->name('home');
 
 Route::get('/admin/form', 'AdminController@form');
 Route::post('/admin/form', 'AdminController@store');
+//Alternative Form mit Laravel
+Route::get('/admin/altform', 'AdminController@altform');
+Route::post('/admin/altform', 'AdminController@altstore');
 
+//Login fuer Admin
+Route::get('/admin/login', 'SessionsController@create');
+Route::post('/admin/login', 'SessionsController@store');
+Route::get('/admin/logout', 'SessionsController@destroy');
 
 Route::get('/admin/{game}', 'AdminController@show');
 Route::post('/admin/{game}', 'AdminController@update');
@@ -33,3 +40,6 @@ Route::resource('player', 'PlayerController');
 
 
 Route::get('/listdata/{game}', 'ListController@show');
+
+
+

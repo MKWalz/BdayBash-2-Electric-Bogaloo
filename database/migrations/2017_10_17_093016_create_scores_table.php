@@ -15,11 +15,11 @@ class CreateScoresTable extends Migration
     {
         Schema::create('scores', function (Blueprint $table) {
 
-        $table->integer('player_id')->unsigned()->nullable();
+        $table->integer('player_id')->unsigned()->unique();
         $table->foreign('player_id')->references('id')
             ->on('players')->onDelete('cascade');
 
-        $table->integer('game_id')->unsigned()->nullable();
+        $table->integer('game_id')->unsigned()->unique();
         $table->foreign('game_id')->references('id')
             ->on('games')->onDelete('cascade');
             

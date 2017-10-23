@@ -7,6 +7,8 @@
 {{ csrf_field() }}
   Spielname:<br>
   <input type="text" name="name"><br>
+  Spiel Nummer:<br>
+  <input type="text" name="game_nr"><br>
 
   Anleitung:<br>
   <textarea name="instructions"></textarea>

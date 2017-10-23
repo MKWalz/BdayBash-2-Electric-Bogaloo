@@ -13,7 +13,7 @@
   <textarea name="instructions">{{$game->instructions}}</textarea>
   <br>
 <p>Eingabetype 
-	 <select name="gametype" value="estimate">
+	 <select name="gametype">
 	  <option id='brave' value="brave">Mut</option>
 	  <option id='timeMovement' value="timeMovement">Bewegung - Zeit</option>
 	  <option id="timeSkill" value="timeSkill"> Geschicklichkeit - Zeit </option>

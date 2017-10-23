@@ -37,22 +37,32 @@ class PlayerController extends Controller
 
 		public function store(){
 
-		$this->validate(request(), [
-
-			'name' => 'required',	
-
-		]);
-
-
-		Player::create([
-
-			'name' => request('name'),
+			$player = Player::where('name', '=', request('name'))->get();
+			if(count($player) > 0)
+			{
+			echo "vorhanden";
+			}
+			else
+			echo "nicht vorhanden";
 
 
-		]);
 
-		return redirect('player');
+		// $this->validate(request(), [
 
-		}
+		// 	'name' => 'required',	
+
+		// ]);
+
+
+		// Player::create([
+
+		// 	'name' => request('name'),
+
+
+		// ]);
+
+		// return redirect('player');
+
+		 }
 
 }

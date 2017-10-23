@@ -19,6 +19,8 @@
 		
 	@endforeach
 
-
+<a href="/player/form"> 
+							<h2>Erstelle neuen User</h2>
+						</a>
 
 @endsection

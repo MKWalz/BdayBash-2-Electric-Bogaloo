@@ -10,7 +10,7 @@ class AdminController extends Controller
 	
     public function index(Game $games){
 
-    	$games = $games->all();
+    	$games = $games->all()->sortBy('game_nr');
 
 		return view("admin.index" , compact('games'));
 
@@ -40,13 +40,16 @@ class AdminController extends Controller
 
 	public function update(Request $request, $id)
 	{
-
-	
+		$this->validate(request(), [
+			'name' => 'required|min:2',
+			'game_nr' => 'required | numeric',
+		]);
 
 	$data = $this->checkCheckbox($request);
 
     $update = Game::find($id);
     $update->name = request('name');
+    $update->game_nr = request('game_nr');
 	$update->instructions = request('instructions');
 	$update->gametype = request('gametype');
  	$update->live = $data[0];
@@ -73,53 +76,63 @@ class AdminController extends Controller
 
 	public function store(Request $request){
 		
-		$this->validate(request(), ['name' => 'required|min:2']);
+		$this->validate(request(), [
+			'name' => 'required|min:2',
+			'game_nr' => 'required | numeric',
+		]);
 
         $data = $this->checkCheckbox($request);
             	
 		Game::create([
 			'name' => request('name'),
+			'game_nr' => request('game_nr'),
 			'instructions' => request('instructions'),
 			'gametype' => request('gametype'),
  			'live' => $data[0],
 			'award_ceremony' => $data[1],
 			'repeatable' => $data[2],
 		]);
+
 		return redirect()->home();
-				// $games = $games->all();
-				// return view("admin.index",  compact('games'));
 
-		// $this->validate(request(), [
-
-		// 		'title' => 'required|min:5',
-		// 		'body' => 'required',
-				
-
-		// 	]);
-
-		// Post::create([// nur daten uebermitteln die absolut sicher
-		// 'title' => request('title'),
-
-		// 'body' => request('body'),
-		// ]);
-	// 	Post::create([
-	// 		'title' => request('title'),
-
-	// 		'body'	=> request('body'),
-			
-	// 		'user_id' => auth()->id()// alt ->user()->id
-
-
-	// ]);
-
-	// 	return redirect()->home();
-
-		// Create New post using request Data
-		//Save it to the Database
-		//And then redirect to Homepage
 		
 	}
 
+
+
+
+
+//fuer alternatives Formular
+
+	public function altstore(Request $request){
+		
+		$this->validate(request(), [
+			'name' => 'required|min:2',
+			'game_nr' => 'required | numeric',
+		]);
+
+        $data = $this->checkCheckbox($request);
+            	
+		Game::create([
+			'name' => request('name'),
+			'game_nr' => request('game_nr'),
+			'instructions' => request('instructions'),
+			'gametype' => request('gametype'),
+ 			'live' => $data[0],
+			'award_ceremony' => $data[1],
+			'repeatable' => $data[2],
+		]);
+		
+		return redirect()->home();
+
+		
+	}
+
+		public function altform(){
+
+		return view("admin.altform");
+
+	} 
 
 
 
