@@ -20,7 +20,7 @@ Route::get('/admin', 'AdminController@index')->name('home');
 Route::get('/admin/form', 'AdminController@form');
 Route::post('/admin/form', 'AdminController@store');
 //Alternative Form mit Laravel
-Route::get('/admin/altform', 'AdminController@altform');
+Route::get('/admin/create', 'AdminController@altform');
 Route::post('/admin/altform', 'AdminController@altstore');
 
 //Login fuer Admin

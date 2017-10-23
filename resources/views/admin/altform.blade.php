@@ -1,13 +1,3 @@
-@extends('layout.master')
-
-@section('content')
-
-
-
-  
-{{ Form::open() }}
-{{ csrf_field() }}
-
 {{Form::label('name', 'Spiel Name')}}
 {{Form::text('name')}}<br/>
 
@@ -32,10 +22,3 @@
 ),'timeMovement' )}}<br/>
 
 {{ Form::submit() }}
-
-{{ Form::close() }}
-
-
-
-
-@endsection('')

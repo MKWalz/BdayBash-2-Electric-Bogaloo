@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\GameRequest;
 use App\Game;
 
 class AdminController extends Controller
@@ -105,7 +106,11 @@ class AdminController extends Controller
 //fuer alternatives Formular
 
 	public function altstore(Request $request){
-		
+		$this->validate(request(), [
+			'name' => 'required|min:2',
+			'game_nr' => 'required | numeric',
+		]);
+	
 	$new = new Game;
     $new->name = request('name');
     $new->game_nr = request('game_nr');
@@ -124,7 +129,7 @@ class AdminController extends Controller
 
 		public function altform(){
 
-		return view("admin.altform");
+		return view("admin.create");
 
 	} 
 
