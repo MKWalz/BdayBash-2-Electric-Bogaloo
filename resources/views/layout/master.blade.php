@@ -8,7 +8,7 @@
 
 </head>
 
-<body>	
+<body style="padding: 20px">	
         
       	@yield('content')   
 

@@ -5,10 +5,10 @@
 
 
   
-{{ Form::open(['action' => 'AdminController@altstore']) }}
+{{ Form::open(['action' => 'AdminController@store']) }}
 	<h2>Erzeuge neues Spiel</h2>
 
-@include('admin.altform')
+@include('admin.form', ['submitname' => 'Neues Spiel erzeugen'])
 
 {{ Form::close() }}
 

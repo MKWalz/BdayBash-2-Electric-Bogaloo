@@ -4,24 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Player;
+use App\Game;
 
 class PlayerController extends Controller
 {
 	    public function index(Player $players){
 
-	    	
-	    	//$players = $players->game;
-
 	  		  $players = $players->all();
 
-			 return view("player.index" , compact('players'));
+		return view("player.index" , compact('players'));
 
 		}
 
 
 		public function show(Player $player){
 
-		$games = $player->game;
+			$games = $player->game;
 
 
 		return view("player.show", compact('player', 'games'));		
@@ -37,32 +35,83 @@ class PlayerController extends Controller
 
 		public function store(){
 
+			 $this->validate(request(), [
+		 	'name' => 'required',	
+		 	]);
+
 			$player = Player::where('name', '=', request('name'))->get();
 			if(count($player) > 0)
 			{
-			echo "vorhanden";
+			return "vorhanden"; // vorlauefig
 			}
-			else
-			echo "nicht vorhanden";
+
+			else 
+			{
+
+			Player::create([
+
+			'name' => request('name'),
 
 
-
-		// $this->validate(request(), [
-
-		// 	'name' => 'required',	
-
-		// ]);
+		 	]);	
 
 
-		// Player::create([
+		return redirect('player');
 
-		// 	'name' => request('name'),
+			}
+		}
+
+		public function update(){
+
+			$update = Player::find(request('player_id'));
+			$update->game()->updateExistingPivot(request('game_id'), array('value' => request('value'))); 
+
+			session()->flash('message', 'Ergebnis erfolgreich ge&auml;ndert');
+    		return redirect()->back();
+		}
+
+		public function score_show(){
+
+    		return view("player.testcreategame");		
+		}
+
+		public function score_store(){
+			$update = Player::find(request('player_id')); 
+			$exists = $update->game->contains(request('game_id'));
 
 
-		// ]);
+			if ($exists) {
+				$varDB = (int)$update->game->find(request('game_id'))->pivot->value;
+				$varReq = (int)request('value');
 
-		// return redirect('player');
+				if($varReq > $varDB){
 
-		 }
+				$update->game()->updateExistingPivot(request('game_id'), array('value' => request('value'))); 
+
+
+				}else{
+
+				return redirect('player');
+
+				}
+
+			
+
+			} else {
+			$update->game()->attach(request('game_id'), array('value' => request('value')));;
+
+			}
+			
+			return redirect('player');
+		}
+
+		public function delete($id)
+			{
+				$update = Player::find(request('player_id'));
+				$delete->game()->detach((request('game_id'));
+		}
 
 }
+
+
+

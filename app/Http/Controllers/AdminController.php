@@ -17,121 +17,114 @@ class AdminController extends Controller
 
 	}
 
-	public function form(){
+	public function create(){
 
-		return view("admin.form");
+		return view("admin.create");
 
 	} 
 
-	
-	public function show(Game $game){
+	public function store(Request $request){
+
+		$this->validate(request(), [
+			'name' => 'required|min:2',
+			'game_nr' => 'required | numeric',
+			'instructions' =>'required',
+		]);
+		
+		$new = new Game;
+	    $new->name = request('name');
+	    $new->game_nr = request('game_nr');
+		$new->instructions = request('instructions');
+		$new->gametype = request('gametype');
+	 	$new->live = $request->has('live');
+		$new->award_ceremony = $request->has('award_ceremony');
+		$new->repeatable = $request->has('repeatable');
+
+		$new->save();
+		
+	return redirect()->home();
+		
+	}
+
+	public function update(Game $game){
 
 	return view("admin.update", compact('game'));		
 
 	}
 
-	public function delete($id){
 
-	$delete = Game::find($id);
-
-	$delete->delete();
-
-	return redirect()->home();
-	}
-
-	public function update(Request $request, $id)
+	public function store_update(Request $request, $id)
 	{
 		$this->validate(request(), [
 			'name' => 'required|min:2',
 			'game_nr' => 'required | numeric',
+			'instructions' =>'required',
 		]);
 
-	$data = $this->checkCheckbox($request);
+	    $update = Game::find($id);
+	    $update->name = request('name');
+	    $update->game_nr = request('game_nr');
+		$update->instructions = request('instructions');
+		$update->gametype = request('gametype');
+	 	$update->live = $request->has('live');
+		$update->award_ceremony = $request->has('award_ceremony');
+		$update->repeatable = $request->has('repeatable');
 
-    $update = Game::find($id);
-    $update->name = request('name');
-    $update->game_nr = request('game_nr');
-	$update->instructions = request('instructions');
-	$update->gametype = request('gametype');
- 	$update->live = $data[0];
-	$update->award_ceremony = $data[1];
-	$update->repeatable = $data[2];
+		$update->save();
 
-	$update->save();
+	return redirect()->home();
+
 	}
 
-	public function checkCheckbox(Request $request){
+
+	public function delete($id)
+	{
+
+		$delete = Game::find($id);
+
+		$delete->delete();
+
+	return redirect()->home();
+	}
 
 
-    (isset($request->live)) ? $live = 1 : $live = 0;
-    (isset($request->award_ceremony)) ? $award_ceremony = 1 : $award_ceremony = 0;
-    (isset($request->repeatable)) ? $repeatable = 1 : $repeatable = 0;
 
-    $data = array($live,$award_ceremony,$repeatable);
+	// public function checkCheckbox(Request $request){
+
+
+ //    (isset($request->live)) ? $live = 1 : $live = 0;
+ //    (isset($request->award_ceremony)) ? $award_ceremony = 1 : $award_ceremony = 0;
+ //    (isset($request->repeatable)) ? $repeatable = 1 : $repeatable = 0;
+
+ //    $data = array($live,$award_ceremony,$repeatable);
    
-    return $data;
+ //    return $data;
 
-	}
-
-
-
-	public function store(Request $request){
+	// }
+	// public function store(Request $request){
 		
-		$this->validate(request(), [
-			'name' => 'required|min:2',
-			'game_nr' => 'required | numeric',
-		]);
+	// 	$this->validate(request(), [
+	// 		'name' => 'required|min:2',
+	// 		'game_nr' => 'required | numeric',
+	// 	]);
 
-        $data = $this->checkCheckbox($request);
+ //        $data = $this->checkCheckbox($request);
             	
-		Game::create([
-			'name' => request('name'),
-			'game_nr' => request('game_nr'),
-			'instructions' => request('instructions'),
-			'gametype' => request('gametype'),
- 			'live' => $data[0],
-			'award_ceremony' => $data[1],
-			'repeatable' => $data[2],
-		]);
+	// 	Game::create([
+	// 		'name' => request('name'),
+	// 		'game_nr' => request('game_nr'),
+	// 		'instructions' => request('instructions'),
+	// 		'gametype' => request('gametype'),
+ // 			'live' => $data[0],
+	// 		'award_ceremony' => $data[1],
+	// 		'repeatable' => $data[2],
+	// 	]);
 
-		return redirect()->home();
-
-		
-	}
-
-
-
-
-
-//fuer alternatives Formular
-
-	public function altstore(Request $request){
-		$this->validate(request(), [
-			'name' => 'required|min:2',
-			'game_nr' => 'required | numeric',
-		]);
-	
-	$new = new Game;
-    $new->name = request('name');
-    $new->game_nr = request('game_nr');
-	$new->instructions = request('instructions');
-	$new->gametype = request('gametype');
- 	$new->live = $request->has('live');
-	$new->award_ceremony = $request->has('award_ceremony');
-	$new->repeatable = $request->has('repeatable');
-
-	$new->save();
-		
-		return redirect()->home();
+	// 	return redirect()->home();
 
 		
-	}
+	// }
 
-		public function altform(){
-
-		return view("admin.create");
-
-	} 
 
 
 

@@ -17,26 +17,46 @@ Route::get('/', function () {
 
 Route::get('/admin', 'AdminController@index')->name('home');
 
-Route::get('/admin/form', 'AdminController@form');
-Route::post('/admin/form', 'AdminController@store');
-//Alternative Form mit Laravel
-Route::get('/admin/create', 'AdminController@altform');
-Route::post('/admin/altform', 'AdminController@altstore');
+//Create New Game
+Route::get('/admin/create', 'AdminController@create');
+Route::post('/admin/store', 'AdminController@store');
 
-//Login fuer Admin
+//Show game, single
+//Route::get('/admin/{game}', 'AdminController@show');
+
+//UpdateGame
+Route::get('/admin/{game}/edit', 'AdminController@update');
+Route::patch('/admin/{game}/edit', 'AdminController@store_update');
+
+//Delte Game
+Route::delete('/admin/{game}', 'AdminController@delete');
+//Alternative Form mit Laravel
+
+
+
+//Login  Admin, Sessioncontroller
 Route::get('/admin/login', 'SessionsController@create');
 Route::post('/admin/login', 'SessionsController@store');
 Route::get('/admin/logout', 'SessionsController@destroy');
 
-Route::get('/admin/{game}', 'AdminController@show');
-Route::post('/admin/{game}', 'AdminController@update');
-
-Route::delete('/admin/{game}', 'AdminController@delete');
 
 
+Route::get('/player/test','PlayerController@score_show');
+Route::post('/player/testscore','PlayerController@score_store');
+
+Route::get('/player','PlayerController@index' );
+Route::post('/player','PlayerController@store' );
 
 Route::get('/player/form', 'PlayerController@form');
-Route::resource('player', 'PlayerController');
+Route::patch('/player/form', 'PlayerController@update');
+
+
+
+//etc.
+
+Route::get('/player/{player}', 'PlayerController@show');
+
+
 
 
 Route::get('/listdata/{game}', 'ListController@show');
