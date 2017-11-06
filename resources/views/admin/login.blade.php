@@ -6,6 +6,7 @@
 @section('content')
 
 <form method="POST" action="/admin/login">
+
 	  <div style="padding: 40px">
 		  	{{ csrf_field() }}
 		  	Adminlogin:<br>

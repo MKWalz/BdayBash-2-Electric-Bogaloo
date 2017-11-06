@@ -16,3 +16,9 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/json', 'JsonController@get_json_gamelist');
+Route::post('/json', 'JsonController@set_json_player');
+//Score Functions
+Route::post('/json/score_store', 'JsonController@set_json_player');
+Route::post('/json/score_store', 'JsonController@set_json_player');

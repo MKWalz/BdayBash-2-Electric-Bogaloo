@@ -79,7 +79,7 @@ class PlayerController extends Controller
 			$update = Player::find(request('player_id')); 
 			$exists = $update->game->contains(request('game_id'));
 
-
+			//case: send data, but it already exists, override
 			if ($exists) {
 				$varDB = (int)$update->game->find(request('game_id'))->pivot->value;
 				$varReq = (int)request('value');
@@ -96,7 +96,7 @@ class PlayerController extends Controller
 				}
 
 			
-
+			//case: not created, create an new
 			} else {
 			$update->game()->attach(request('game_id'), array('value' => request('value')));;
 
@@ -105,11 +105,13 @@ class PlayerController extends Controller
 			return redirect('player');
 		}
 
-		public function delete($id)
-			{
+		public function delete($id){
 				$update = Player::find(request('player_id'));
-				$delete->game()->detach((request('game_id'));
+				$delete->game()->detach((request('game_id')));
 		}
+
+		
+
 
 }
 

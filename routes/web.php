@@ -44,6 +44,10 @@ Route::get('/admin/logout', 'SessionsController@destroy');
 Route::get('/player/test','PlayerController@score_show');
 Route::post('/player/testscore','PlayerController@score_store');
 
+//Jsonanfragen
+Route::get('/json/list','JsonController@get_json_gamelist');
+Route::post('/json/list','JsonController@set_json_player');
+
 Route::get('/player','PlayerController@index' );
 Route::post('/player','PlayerController@store' );
 

@@ -1,0 +1,33 @@
+
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{game.name}}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+	{{game.instructions}}
+
+
+	<!-- Placeholder for special interactions, -Timer -->
+
+
+    <form [formGroup]="inputForm">
+			 
+			    <ion-item>
+			            <ion-label floating>Dein Ergebniss</ion-label>
+			            <ion-input formControlName="score" type="text"></ion-input>
+			    </ion-item>
+			            <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
+			            <ion-input formControlName="player_id" type="hidden" value="619"></ion-input>
+			    
+
+		
+	<button ion-button full color="primary" (click)="postScore()">Absenden</button>		 
+	</form>
+	
+
+</ion-content>
