@@ -12,16 +12,16 @@ class JsonController extends Controller
 {
 
 
-    public function get_json_gamelist(Game $games_json){
-		$games_json = $games_json->all()->sortBy('game_nr');
-		return $games_json->toJson();
+    public function get_json_gamelist(Game $game){
+		$games_json = $game->orderBy('game_nr')->get();
+		return response()->json($games_json);
 	}
 
 
 	//provide the current Top5 Player Score
 	public function get_json_top5(Game $game){
 		$top5 = $game->player()->orderBy('value', 'desc')->take(5)->get();
-		return $top5->toJson();
+		return response()->json($top5);
 	}
 	
 		
