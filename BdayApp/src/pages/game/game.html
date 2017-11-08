@@ -14,20 +14,41 @@
 
 	<!-- Placeholder for special interactions, -Timer -->
 
+	<ion-slides> 
+		<ion-slide>
+		    <form [formGroup]="inputForm">
+					 
+					    <ion-item>
+					            <ion-label floating>Dein Ergebniss</ion-label>
+					            <ion-input formControlName="score" type="text"></ion-input>
+					    </ion-item>
+					    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
 
-    <form [formGroup]="inputForm">
-			 
-			    <ion-item>
-			            <ion-label floating>Dein Ergebniss</ion-label>
-			            <ion-input formControlName="score" type="text"></ion-input>
-			    </ion-item>
-			            <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
-			            <ion-input formControlName="player_id" type="hidden" value="619"></ion-input>
-			    
+			<button ion-button full color="primary" (click)="postScore()">Absenden</button>		 
+			</form>
+		</ion-slide>
 
-		
-	<button ion-button full color="primary" (click)="postScore()">Absenden</button>		 
-	</form>
+		<ion-slide>
+			<button ion-button full color="primary" (click)="showTop5()">Lade Top 5 Score</button>
+			<ion-list>
+
+				<ion-item *ngFor="let score of scores">
+
+			      {{score.name}} {{score.pivot.value}}
+			    </ion-item>  
+
+		  	</ion-list>
+		  	
+		</ion-slide> 
+
+
+	</ion-slides> 
 	
 
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-title>Dein aktuelles Ergebniss: {{cookie}}</ion-title>
+  </ion-toolbar>
+</ion-footer>

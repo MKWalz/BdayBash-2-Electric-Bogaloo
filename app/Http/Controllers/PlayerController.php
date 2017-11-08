@@ -98,7 +98,7 @@ class PlayerController extends Controller
 			
 			//case: not created, create an new
 			} else {
-			$update->game()->attach(request('game_id'), array('value' => request('value')));;
+			$update->game()->attach(request('game_id'), array('value' => request('value')));
 
 			}
 			

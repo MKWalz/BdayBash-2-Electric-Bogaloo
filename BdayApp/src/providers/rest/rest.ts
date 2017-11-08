@@ -4,6 +4,12 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/catch';
 import {Observable} from 'rxjs/Observable';
+
+//Imports for dynamic API-URL by Vidailhet
+import {EnvConfigurationProvider} from "gl-ionic2-env-configuration";
+// You can specify a typing for your configuration to get nice and neat autocompletion
+import {ITestAppEnvConfiguration} from "../../env-configuration/ITestAppEnvConfiguration";
+
 /*
   Generated class for the RestProvider provider.
 
@@ -13,18 +19,31 @@ import {Observable} from 'rxjs/Observable';
 @Injectable()
 export class RestProvider {
 
-  private url: string ="http://localhost:8000/api/json";
+  private url: string ="";
 
-  constructor(public http: Http) {
-    console.log('Hello RestProvider Provider');    
+  constructor(public http: Http, private envConfiguration: EnvConfigurationProvider<ITestAppEnvConfiguration>) {
+    console.log('Hello RestProvider Provider');
+
+    let config: ITestAppEnvConfiguration = envConfiguration.getConfig();
+    this.url = config.name; // And here you have your nice configuration    
   }
 
- public getGameData(){
+    //
+    public getGameData(){
 	  	return this.http.get(this.url)
 	  	.map(this.extractData)
 	  	.do(this.logResponse) 
 	  	.catch(this.catchError); // nur body zueruck
 	  }
+
+    //load the Leaderboard for the selected Game
+    public showTop5(game_id){
+      let urlVar = this.url+ "/score/" +game_id;
+      return this.http.get(urlVar)
+      .map(this.extractData)
+      .do(this.logResponse) 
+      .catch(this.catchError);
+    }
 
 
     
@@ -44,6 +63,7 @@ export class RestProvider {
   }
 
   postScore(score, game_id, player_id) {
+    let urlVar = this.url+ "/store_score";
     var headers = new Headers();
     headers.append("Accept", 'application/json');
     headers.append('Content-Type', 'application/json' );
@@ -51,11 +71,11 @@ export class RestProvider {
  
     let postParams = { //change so you can post input
       game_id: game_id,
-      name: player_name,
+      name: player_id,
       value: score
     }
     
-    return this.http.post(this.url, postParams, options)
+    return this.http.post(urlVar, postParams, options)
     .map(this.extractData)
     .do(this.logResponse)
     .catch(this.catchError);
@@ -78,6 +98,8 @@ export class RestProvider {
     .catch(this.catchError);
 
   }
+
+
 
 
 }

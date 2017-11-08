@@ -15,6 +15,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpModule} from '@angular/http';
 import { CookieProvider } from '../providers/cookie/cookie';
 import { RestProvider } from '../providers/rest/rest';
+//API URL Modul
+import { GLIonic2EnvConfigurationModule } from 'gl-ionic2-env-configuration';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,8 @@ import { RestProvider } from '../providers/rest/rest';
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
-    HttpModule
+    HttpModule,
+    GLIonic2EnvConfigurationModule // Import the module here
   ],
   bootstrap: [IonicApp],
   entryComponents: [

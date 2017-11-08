@@ -13,11 +13,21 @@ class JsonController extends Controller
 
 
     public function get_json_gamelist(Game $games_json){
-			$games_json = $games_json->all()->sortBy('game_nr');
-			return $games_json->toJson();
-		}
+		$games_json = $games_json->all()->sortBy('game_nr');
+		return $games_json->toJson();
+	}
 
-		public function set_json_player(Request $request){
+
+	//provide the current Top5 Player Score
+	public function get_json_top5(Game $game){
+		$top5 = $game->player()->orderBy('value', 'desc')->take(5)->get();
+		return $top5->toJson();
+	}
+	
+		
+
+		//handle request to create new Player
+	public function set_json_player(Request $request){
 			$data = $request->json()->all();
 
 			$player = Player::create([
@@ -28,11 +38,32 @@ class JsonController extends Controller
 		 	]);	
 		 	$id = $player->id;
 
-			return response([$data['name'], $id],200)
-                ->cookie('name', 'value');   
+			return response([$data['name'], $id],200);   
 		}
 
 
+	//handle Request to  set the score for the game
+	public function set_json_score(Request $request){
 
+
+			$data = $request->json()->all();
+			$player = Player::where('name', $data['name'])->first();
+
+			//check if there is already a entry
+
+			if(!$player->game->contains($data['game_id'])){
+
+				$player->game()->attach($data['game_id'], array('value' => $data['value']));
+				return response(["Create New"],200);   
+			
+			} else {
+
+				$player->game()->updateExistingPivot($data['game_id'], array('value' => $data['value'])); 
+				return response(["Update Old"],200); 
+			
+			}
+
+		}
+			
 
 }

@@ -16,9 +16,12 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
+//Gamendex Link
 Route::get('/json', 'JsonController@get_json_gamelist');
+//Top 5 Link
+Route::get('/json/score/{game}', 'JsonController@get_json_top5');
+
 Route::post('/json', 'JsonController@set_json_player');
 //Score Functions
-Route::post('/json/score_store', 'JsonController@set_json_player');
-Route::post('/json/score_store', 'JsonController@set_json_player');
+Route::post('/json/store_score', 'JsonController@set_json_score');
+
