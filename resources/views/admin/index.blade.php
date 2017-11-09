@@ -9,7 +9,8 @@
 	@endif
 
 <br/>
-<a href="/admin/create">Erzeuge neues Game<a/>&emsp;<a href="/admin/login">Login</a>
+<a href="/admin/create">Erzeuge neues Spiel<a/>&emsp; <a href="/player">Spielerkontrolle<a/>
+{{-- <a href="/admin/login">Login</a> --}}
 
 @foreach($games as $game)
 
@@ -17,16 +18,9 @@
 
 		<p>
 
-				<a href="/admin/{{$game->id}}/edit"> 
-					<h2>{{$game->game_nr}}. - {{$game->name}}</h2>
-				</a>
+			<a href="/admin/{{$game->id}}/edit"> <h2>{{$game->game_nr}}. - {{$game->name}}</h2></a>
 
-			 {{$game->instructions}}	<br>
-
-			 <a href="/listdata/{{$game->id}}"> 
-					<h2>Top 5</h2>
-				</a>
-				
+			<a href="/listdata/{{$game->id}}"><h3>-> Top 5</h2></a>
 		_______________
 		</p>
 

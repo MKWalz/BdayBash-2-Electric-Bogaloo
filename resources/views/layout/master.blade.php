@@ -3,7 +3,7 @@
 <html>
 
 <head>
-
+<link href="{!! asset('css/css.css') !!}" media="all" rel="stylesheet" type="text/css" />
     <title>Master of the House</title>
 
 </head>

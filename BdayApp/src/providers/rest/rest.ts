@@ -25,7 +25,8 @@ export class RestProvider {
     console.log('Hello RestProvider Provider');
 
     let config: ITestAppEnvConfiguration = envConfiguration.getConfig();
-    this.url = config.name; // And here you have your nice configuration    
+    this.url = config.name; // And here you have your nice configuration
+       
   }
 
     //

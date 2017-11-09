@@ -11,11 +11,8 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
-Route::get('/admin', 'AdminController@index')->name('home');
+Route::get('/', 'AdminController@index')->name('home');
 
 //Create New Game
 Route::get('/admin/create', 'AdminController@create');

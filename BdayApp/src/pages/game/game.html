@@ -24,8 +24,18 @@
 					    </ion-item>
 					    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
 
-			<button ion-button full color="primary" (click)="postScore()">Absenden</button>		 
+			 
 			</form>
+				<div ngSwitch="{{game.gametype}}">
+
+					<div *ngSwitchCase="'brave'" [ngClass]="'one'">I am brave.
+						<button ion-button round (click)="confirmBrave()">Bravebutton</button>	
+					</div>
+
+					<div *ngSwitchDefault>
+						<button ion-button full color="primary" (click)="postScore()">Absenden</button>	
+					</div>
+  				</div> 
 		</ion-slide>
 
 		<ion-slide>
@@ -35,6 +45,8 @@
 				<ion-item *ngFor="let score of scores">
 			      {{score.name}} {{score.pivot.value}}
 			    </ion-item>  
+
+
 
 		  	</ion-list>
 		  	
