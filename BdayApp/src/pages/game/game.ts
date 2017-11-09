@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular'; 
 //AlertController for the AlertBox
 
@@ -13,16 +13,19 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   templateUrl: 'game.html',
 })
 export class GamePage {
-	game:{'id'};
+
+  @ViewChild('arrowNav') arrowNav: any; 
+
+	game:{'id','gametype'};
 	inputForm: FormGroup;
-  cookie:"";
+  cookie: string ="";
+  position:"";
 
   //top5
   scores:{};
   constructor(public navCtrl: NavController, public navParams: NavParams, private restProvider : RestProvider, private cookieProvider : CookieProvider, public formBuilder:FormBuilder,
   	public alertCtrl: AlertController) {
   	this.game = navParams.get('game');
-
   	//Form
   	this.inputForm = formBuilder.group({
         score: ['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required])],
@@ -33,8 +36,11 @@ export class GamePage {
     this.refreshCurrentScore();
   }
 
-  ionViewDidLoad() {
+  ionViewDidLoad() { // Handles the different Gametypes
     console.log('ionViewDidLoad GamePage');
+    if(this.game.gametype == "brave" || this.game.gametype == "estimate"){
+      this.arrowNav.lockSwipes(true);
+    }
   }
 
   presentAlert() {
@@ -49,7 +55,7 @@ export class GamePage {
 }
 
 //from Game window
-postScore(){
+postScore(gametype){
   let oldScore = this.cookieProvider.getCookie("gamescoreID"+this.inputForm.value.game_id);
   let newScore = this.inputForm.value.score;
 
@@ -57,30 +63,54 @@ postScore(){
         console.log("error!");
 
     }else if(oldScore > newScore) {
+
         console.log("Dieser Wert ist kleiner als der bereits gespeicherte!");
     } else {
 
-    	this.presentAlert();
+
+    	
 
       //Send Data
 		  this.restProvider.postScore(
 			newScore,
-  		this.inputForm.value.game_id,
+  		this.game.id,
       this.cookieProvider.getCookie("username")
 			).subscribe();
 
       //set Cookie for checking if Value is lower than the submitted one, and give out current score
       this.cookieProvider.setCookie(
-      "gamescoreID"+this.inputForm.value.game_id,
+      "gamescoreID"+this.game.id,
       newScore,
       120
       );
-     
+      
       this.refreshCurrentScore();
-
+      this.next();
+      this.presentAlert();
    	}
 
 	}
+
+postBool(){
+      //Send Data
+      this.restProvider.postScore(
+      1,
+      this.game.id,
+      this.cookieProvider.getCookie("username")
+      ).subscribe();
+
+      //set Cookie for checking if Value is lower than the submitted one, and give out current score
+      this.cookieProvider.setCookie(
+      "gamescoreID"+this.game.id,
+      "Bestanden",
+      120
+      );
+      console.log(this.cookieProvider.getCookie("gamescoreID"+this.game.id));
+      this.refreshCurrentScore();
+      this.presentAlert();
+
+  }
+
 
   showTop5(){
       this.restProvider.showTop5(this.game.id)
@@ -93,5 +123,22 @@ postScore(){
     this.cookie = this.cookieProvider.getCookie("gamescoreID"+this.game.id);
   }
 
+  //Slidescontroll
+  next(){// wechsele den Viewport auf den nächsten <slide> im html
+        this.arrowNav.slideNext();
+
+    }
+   prev(){
+        this.arrowNav.slidePrev();
+    } 
+
+    slideChanged() {
+    let currentIndex = this.arrowNav.getActiveIndex();
+    this.position = this.arrowNav.getActiveIndex();
+    if(currentIndex == 1){
+      this.showTop5();
+    }
+    
+  }
 
 }

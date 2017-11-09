@@ -2,7 +2,7 @@
 
 @section('content')
 
-<form method="POST" action="/player" style="padding: 40px">
+<form method="POST" action="/player" class='box'>
 
 {{ csrf_field() }}
   Name:<br>
@@ -16,8 +16,8 @@
 
 
 </q>― Suzanne Collins, The Hunger Games</p>
-
-
+<br>
+<a href="/player">Zurück</a>
 
 
 @endsection('')

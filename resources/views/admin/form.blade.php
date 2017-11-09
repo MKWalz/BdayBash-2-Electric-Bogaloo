@@ -18,14 +18,12 @@
 {{Form::label('live', 'Liveauswertung')}}
 {{ Form::checkbox('live', 'value')}}<br/>
 
+{{Form::label('gametype', 'Gametype')}}
 {{Form::select('gametype', array(
     'brave' => 'Mut',
-    'timeMovement' => 'Bewegung - Zeit',
-    'timeSkill'=> 'Geschicklichkeit - Zeit',
-    'pointMovement' =>'Bewegung - Punkte',
-    'pointSkill' => 'Geschicklichkeit - Punkte',
-    'pointQuiz'=>'Quiz',
-    'estimate'=> 'Sch&auml;tzen'
+    'time' => 'Zeit',
+    'value'=> 'Punkte',
+
 
 
 ))}}<br/>

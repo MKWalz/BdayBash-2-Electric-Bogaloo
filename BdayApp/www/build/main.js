@@ -34,6 +34,7 @@ var GamePage = (function () {
         this.cookieProvider = cookieProvider;
         this.formBuilder = formBuilder;
         this.alertCtrl = alertCtrl;
+        this.cookie = "";
         this.game = navParams.get('game');
         //Form
         this.inputForm = formBuilder.group({
@@ -45,6 +46,9 @@ var GamePage = (function () {
     }
     GamePage.prototype.ionViewDidLoad = function () {
         console.log('ionViewDidLoad GamePage');
+        if (this.game.gametype == "brave" || this.game.gametype == "estimate") {
+            this.arrowNav.lockSwipes(true);
+        }
     };
     GamePage.prototype.presentAlert = function () {
         var alert = this.alertCtrl.create({
@@ -55,7 +59,7 @@ var GamePage = (function () {
         alert.present();
     };
     //from Game window
-    GamePage.prototype.postScore = function () {
+    GamePage.prototype.postScore = function (gametype) {
         var oldScore = this.cookieProvider.getCookie("gamescoreID" + this.inputForm.value.game_id);
         var newScore = this.inputForm.value.score;
         if (!this.inputForm.valid) {
@@ -65,13 +69,23 @@ var GamePage = (function () {
             console.log("Dieser Wert ist kleiner als der bereits gespeicherte!");
         }
         else {
-            this.presentAlert();
             //Send Data
-            this.restProvider.postScore(newScore, this.inputForm.value.game_id, this.cookieProvider.getCookie("username")).subscribe();
+            this.restProvider.postScore(newScore, this.game.id, this.cookieProvider.getCookie("username")).subscribe();
             //set Cookie for checking if Value is lower than the submitted one, and give out current score
-            this.cookieProvider.setCookie("gamescoreID" + this.inputForm.value.game_id, newScore, 120);
+            this.cookieProvider.setCookie("gamescoreID" + this.game.id, newScore, 120);
             this.refreshCurrentScore();
+            this.next();
+            this.presentAlert();
         }
+    };
+    GamePage.prototype.postBool = function () {
+        //Send Data
+        this.restProvider.postScore(1, this.game.id, this.cookieProvider.getCookie("username")).subscribe();
+        //set Cookie for checking if Value is lower than the submitted one, and give out current score
+        this.cookieProvider.setCookie("gamescoreID" + this.game.id, "Bestanden", 120);
+        console.log(this.cookieProvider.getCookie("gamescoreID" + this.game.id));
+        this.refreshCurrentScore();
+        this.presentAlert();
     };
     GamePage.prototype.showTop5 = function () {
         var _this = this;
@@ -83,11 +97,29 @@ var GamePage = (function () {
     GamePage.prototype.refreshCurrentScore = function () {
         this.cookie = this.cookieProvider.getCookie("gamescoreID" + this.game.id);
     };
+    //Slidescontroll
+    GamePage.prototype.next = function () {
+        this.arrowNav.slideNext();
+    };
+    GamePage.prototype.prev = function () {
+        this.arrowNav.slidePrev();
+    };
+    GamePage.prototype.slideChanged = function () {
+        var currentIndex = this.arrowNav.getActiveIndex();
+        this.position = this.arrowNav.getActiveIndex();
+        if (currentIndex == 1) {
+            this.showTop5();
+        }
+    };
     return GamePage;
 }());
+__decorate([
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])('arrowNav'),
+    __metadata("design:type", Object)
+], GamePage.prototype, "arrowNav", void 0);
 GamePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-game',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/'\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>{{game.name}}</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n	{{game.instructions}}\n\n\n	<!-- Placeholder for special interactions, -Timer -->\n\n	<ion-slides> \n		<ion-slide>\n		    <form [formGroup]="inputForm">\n					 \n					    <ion-item>\n					            <ion-label floating>Dein Ergebniss</ion-label>\n					            <ion-input formControlName="score" type="text"></ion-input>\n					    </ion-item>\n					    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n\n			 \n			</form>\n				<div ngSwitch="{{game.gametype}}">\n\n					<div *ngSwitchCase="\'brave\'" [ngClass]="\'one\'">I am brave.\n						<button ion-button round (click)="confirmBrave()">Bravebutton</button>	\n					</div>\n\n					<div *ngSwitchDefault>\n						<button ion-button full color="primary" (click)="postScore()">Absenden</button>	\n					</div>\n  				</div> \n		</ion-slide>\n\n		<ion-slide>\n			<button ion-button full color="primary" (click)="showTop5()">Lade Top 5 Score</button>\n			<ion-list>\n\n				<ion-item *ngFor="let score of scores">\n			      {{score.name}} {{score.pivot.value}}\n			    </ion-item>  \n\n\n\n		  	</ion-list>\n		  	\n		</ion-slide> \n\n\n	</ion-slides> \n	\n\n</ion-content>\n\n<ion-footer>\n  <ion-toolbar>\n    <ion-title>Dein aktuelles Ergebniss: {{cookie}}</ion-title>\n  </ion-toolbar>\n</ion-footer>'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/,
+        selector: 'page-game',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/'\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>{{game.name}}</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n	{{game.instructions}}\n\n\n	<!-- Placeholder for special interactions, -Timer -->\n\n	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> \n		<ion-slide>\n			<div ngSwitch="{{game.gametype}}">\n					<div *ngSwitchDefault>\n					    <form [formGroup]="inputForm">\n\n						    <ion-item>\n						            <ion-label floating>Dein Ergebniss</ion-label>\n						            <ion-input formControlName="score" type="text"></ion-input>\n						    </ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n						    <button ion-button full color="primary" (click)="postScore()">Absenden</button>	\n					 	</form>\n					</div>\n\n					<div *ngSwitchCase="\'brave\'" [ngClass]="\'brave\'">\n						<button ion-button round [class.button-disabled]="true" (click)="postBool()">Challenge erfolgreich bestanden!</button>	\n					</div>\n\n					<div *ngSwitchCase="\'time\'" [ngClass]="\'time\'">\n						<button ion-button full color="primary">Starte Zeit</button>\n						<button ion-button full color="primary">Absenden</button>		\n					</div>\n\n\n					\n						\n					\n  				</div> \n		</ion-slide>\n\n\n\n		<ion-slide>\n			<button ion-button full color="primary" (click)="showTop5()">Lade Top 5 Score</button>\n			<ion-list>\n\n				<ion-item *ngFor="let score of scores">\n			      {{score.name}} {{score.pivot.value}}\n			    </ion-item>  \n\n		  	</ion-list>\n		</ion-slide> \n	</ion-slides> \n\n</ion-content>\n\n\n\n<ion-footer>\n  <ion-toolbar>\n    <ion-title>Dein aktuelles Ergebniss: {{cookie}}</ion-title>\n<div *ngIf="game.gametype !=\'brave\' && game.gametype !=\'estimate\' ">\n\n    <div right ngSwitch="{{position}}">\n		<div *ngSwitchDefault [ngClass]="\'zero\'">\n		<ion-buttons end>\n        <button ion-button icon-right (click)="next()">Next <ion-icon name="arrow-forward"></ion-icon></button>\n      </ion-buttons>\n		</div>\n\n		<div *ngSwitchCase="\'1\'" [ngClass]="\'one\'">\n			    <ion-buttons end>\n        			<button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Prev</button>\n      			</ion-buttons>\n		</div>		\n								\n  	</div> \n</div>\n\n\n  </ion-toolbar>\n</ion-footer>'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/,
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__providers_rest_rest__["a" /* RestProvider */], __WEBPACK_IMPORTED_MODULE_3__providers_cookie_cookie__["a" /* CookieProvider */], __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormBuilder */],
         __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */]])
@@ -153,7 +185,7 @@ var LoginPage = (function () {
 }());
 LoginPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-login',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/login/login.html"*/'<!--\n  Generated template for the LoginPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>login</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n\n\n    <form [formGroup]="inputUser">\n			 \n			    <ion-item>\n			            <ion-label floating>Dein Benutzername</ion-label>\n			            <ion-input formControlName="user" type="text"></ion-input>\n			    </ion-item>\n	<button ion-button full color="primary" (click)="setUser()">Absenden</button>		 \n	</form>\n  		\n			    Zusätzliche Informationen, etc. Dieser Name wierd öffentlich angezeigt, deswegen w&auml;re es nett keine Obzönenennamen zu wählebn. Aber mach was du willst. Ich bin ein Textfeld, nicht die Polizei.\n   				<div>Kein Grund dich, anzumelden. Geg gleich durch</div>\n\n</ion-content>\n'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/login/login.html"*/,
+        selector: 'page-login',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/login/login.html"*/'<!--\n  Generated template for the LoginPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>login</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n\n\n    <form [formGroup]="inputUser">\n			 \n			    <ion-item>\n			            <ion-label floating>Dein Benutzername</ion-label>\n			            <ion-input formControlName="user" type="text"></ion-input>\n			    </ion-item>\n	<button ion-button full color="primary" (click)="setUser()">Absenden</button>		 \n	</form>\n  		\n			    Zusätzliche Informationen, etc. Dieser Name wierd öffentlich angezeigt, deswegen w&auml;re es nett keine obzönenen Namen zu wählen. Aber mach was du willst. Ich bin ein Textfeld, nicht die Polizei.\n\n\n</ion-content>\n'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/login/login.html"*/,
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */], __WEBPACK_IMPORTED_MODULE_3__providers_rest_rest__["a" /* RestProvider */], __WEBPACK_IMPORTED_MODULE_4__providers_cookie_cookie__["a" /* CookieProvider */]])
 ], LoginPage);
@@ -589,10 +621,9 @@ var RestProvider = (function () {
 }());
 RestProvider = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */]) === "function" && _b || Object])
+    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */], __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */]])
 ], RestProvider);
 
-var _a, _b;
 //# sourceMappingURL=rest.js.map
 
 /***/ }),

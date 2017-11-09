@@ -14,29 +14,39 @@
 
 	<!-- Placeholder for special interactions, -Timer -->
 
-	<ion-slides> 
+	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> 
 		<ion-slide>
-		    <form [formGroup]="inputForm">
-					 
-					    <ion-item>
-					            <ion-label floating>Dein Ergebniss</ion-label>
-					            <ion-input formControlName="score" type="text"></ion-input>
-					    </ion-item>
-					    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
-
-			 
-			</form>
-				<div ngSwitch="{{game.gametype}}">
-
-					<div *ngSwitchCase="'brave'" [ngClass]="'one'">I am brave.
-						<button ion-button round (click)="confirmBrave()">Bravebutton</button>	
-					</div>
-
+			<div ngSwitch="{{game.gametype}}">
 					<div *ngSwitchDefault>
-						<button ion-button full color="primary" (click)="postScore()">Absenden</button>	
+					    <form [formGroup]="inputForm">
+
+						    <ion-item>
+						            <ion-label floating>Dein Ergebniss</ion-label>
+						            <ion-input formControlName="score" type="text"></ion-input>
+						    </ion-item>
+
+						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
+						    <button ion-button full color="primary" (click)="postScore()">Absenden</button>	
+					 	</form>
 					</div>
+
+					<div *ngSwitchCase="'brave'" [ngClass]="'brave'">
+						<button ion-button round [class.button-disabled]="true" (click)="postBool()">Challenge erfolgreich bestanden!</button>	
+					</div>
+
+					<div *ngSwitchCase="'time'" [ngClass]="'time'">
+						<button ion-button full color="primary">Starte Zeit</button>
+						<button ion-button full color="primary">Absenden</button>		
+					</div>
+
+
+					
+						
+					
   				</div> 
 		</ion-slide>
+
+
 
 		<ion-slide>
 			<button ion-button full color="primary" (click)="showTop5()">Lade Top 5 Score</button>
@@ -46,20 +56,35 @@
 			      {{score.name}} {{score.pivot.value}}
 			    </ion-item>  
 
-
-
 		  	</ion-list>
-		  	
 		</ion-slide> 
-
-
 	</ion-slides> 
-	
 
 </ion-content>
+
+
 
 <ion-footer>
   <ion-toolbar>
     <ion-title>Dein aktuelles Ergebniss: {{cookie}}</ion-title>
+<div *ngIf="game.gametype !='brave' && game.gametype !='estimate' ">
+
+    <div right ngSwitch="{{position}}">
+		<div *ngSwitchDefault [ngClass]="'zero'">
+		<ion-buttons end>
+        <button ion-button icon-right (click)="next()">Next <ion-icon name="arrow-forward"></ion-icon></button>
+      </ion-buttons>
+		</div>
+
+		<div *ngSwitchCase="'1'" [ngClass]="'one'">
+			    <ion-buttons end>
+        			<button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Prev</button>
+      			</ion-buttons>
+		</div>		
+								
+  	</div> 
+</div>
+
+
   </ion-toolbar>
 </ion-footer>

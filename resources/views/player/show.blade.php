@@ -25,6 +25,8 @@
 
 		</div>
 {{ Session::get("message", '') }}
+<br>
+<a href="/player">Zurück</a>
 
 
 

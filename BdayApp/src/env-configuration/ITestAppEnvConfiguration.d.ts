@@ -3,6 +3,6 @@
  */
 
 export interface ITestAppEnvConfiguration {
-  env: string,
-  optionalParam?: string
+  name: string,
+  optionalParam?: string,
 }

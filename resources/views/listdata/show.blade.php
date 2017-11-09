@@ -4,7 +4,7 @@
 @section('content')
 
 
-		<div style="padding-left: 20px">
+		<div>
 
 							<h2> - {{$game->name}}</h2>
 							
