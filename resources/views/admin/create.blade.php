@@ -12,7 +12,7 @@
 
 {{ Form::close() }}
 <br>
-<a href="/">Zurück</a>
+<a href="/admin">Zurück</a>
 
 
 

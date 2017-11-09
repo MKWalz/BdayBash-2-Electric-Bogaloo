@@ -16,6 +16,6 @@
 	@endforeach
 </ul>
 <a href="/player/form"><h2>Erstelle neuen User</h2></a>
-<a href="/">Zurück</a>
+<a href="/admin">Zurück</a>
 
 @endsection
