@@ -39,6 +39,9 @@ class AdminController extends Controller
 	 	$new->live = $request->has('live');
 		$new->award_ceremony = $request->has('award_ceremony');
 		$new->repeatable = $request->has('repeatable');
+		//New
+		$new->category = request('category');
+		$new->sort_direction = $request->has('sort_direction');
 
 		$new->save();
 		
@@ -69,6 +72,9 @@ class AdminController extends Controller
 	 	$update->live = $request->has('live');
 		$update->award_ceremony = $request->has('award_ceremony');
 		$update->repeatable = $request->has('repeatable');
+
+		$update->category = request('category');
+		$update->sort_direction = $request->has('sort_direction');
 
 		$update->save();
 

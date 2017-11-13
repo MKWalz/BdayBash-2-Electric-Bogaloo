@@ -38,12 +38,33 @@ export class RestProvider {
 	  }
 
     //load the Leaderboard for the selected Game
-    public showTop5(game_id){
-      let urlVar = this.url+ "/score/" +game_id;
+    public showTop5(game_id, sort){
+      var urlVar;
+      if(sort == 1){
+        urlVar = this.url+ "/scoreR/" +game_id;
+        console.log('asc');
+
+      } else {
+        urlVar = this.url+ "/score/" +game_id;
+        console.log('desc');
+
+      }
+      
+
       return this.http.get(urlVar)
       .map(this.extractData)
       .do(this.logResponse) 
       .catch(this.catchError);
+
+    }
+
+    checkScore(){
+      return this.http.get(this.url, {params: {var1: val1, var2: val2}})
+      .map(this.extractData)
+      .do(this.logResponse) 
+      .catch(this.catchError); 
+      
+    
     }
 
 

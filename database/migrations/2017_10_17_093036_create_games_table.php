@@ -17,15 +17,17 @@ class CreateGamesTable extends Migration
             $table->increments('id');
 
 
-            $table->integer('game_nr')->unique(); 
+            $table->integer('game_nr'); 
             $table->string('name');   
 
-            $table->string('gametype');   
+            $table->string('category'); //added for the customer  
+            $table->string('gametype');  
             $table->text('instructions');  
 
             $table->boolean('repeatable')->default(false);
             $table->boolean('live')->default(false);
             $table->boolean('award_ceremony')->default(false);
+            $table->boolean('sort_direction')->default(false);
 
 
             $table->timestamps();

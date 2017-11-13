@@ -23,6 +23,12 @@ class JsonController extends Controller
 		$top5 = $game->player()->orderBy('value', 'desc')->take(5)->get();
 		return response()->json($top5);
 	}
+
+	
+	public function get_json_top5R(Game $game){
+		$top5 = $game->player()->orderBy('value', 'asc')->take(5)->get();
+		return response()->json($top5);
+	}
 	
 		
 

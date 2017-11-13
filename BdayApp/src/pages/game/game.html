@@ -18,25 +18,36 @@
 		<ion-slide>
 			<div ngSwitch="{{game.gametype}}">
 					<div *ngSwitchDefault>
-					    <form [formGroup]="inputForm">
 
+					    <form [formGroup]="inputForm">
 						    <ion-item>
 						            <ion-label floating>Dein Ergebniss</ion-label>
 						            <ion-input formControlName="score" type="text"></ion-input>
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
-						    <button ion-button full color="primary" (click)="postScore()">Absenden</button>	
-					 	</form>
+						    <button ion-button full color="primary" (click)="postScore()">Absenden</button>						 	
+						</form>
 					</div>
 
 					<div *ngSwitchCase="'brave'" [ngClass]="'brave'">
-						<button ion-button round [class.button-disabled]="true" (click)="postBool()">Challenge erfolgreich bestanden!</button>	
+						<button ion-button round [disabled]="!isRepeatable" (click)="postBool()">Challenge erfolgreich bestanden!</button>	
 					</div>
 
 					<div *ngSwitchCase="'time'" [ngClass]="'time'">
-						<button ion-button full color="primary">Starte Zeit</button>
-						<button ion-button full color="primary">Absenden</button>		
+
+						<form [formGroup]="inputForm">
+
+						    <ion-item>
+						            <ion-label floating>Dein Ergebniss</ion-label>
+						            <ion-input formControlName="score" type="text" disabled="true" value="{{time}}"></ion-input>
+						    </ion-item>
+						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
+
+						    <button ion-button full color="primary" (click)="startTimer()">{{timeTxt}}</button>
+
+						    <button ion-button full color="primary" (click)="postTime()" [disabled]="!canSend">Absenden</button>						 	
+						</form>
 					</div>
 
 
@@ -49,7 +60,7 @@
 
 
 		<ion-slide>
-			<button ion-button full color="primary" (click)="showTop5()">Lade Top 5 Score</button>
+			<button ion-button full color="primary" (click)="showTop5()">Bestenliste aktualisieren</button>
 			<ion-list>
 
 				<ion-item *ngFor="let score of scores">

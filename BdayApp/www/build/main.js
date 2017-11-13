@@ -35,6 +35,14 @@ var GamePage = (function () {
         this.formBuilder = formBuilder;
         this.alertCtrl = alertCtrl;
         this.cookie = "";
+        //time variables
+        this.time = 0;
+        this.durationRAW = 0;
+        this.isCounting = false;
+        this.canSend = false;
+        this.timeTxt = "Start";
+        //repeatable variable
+        this.isRepeatable = true;
         this.game = navParams.get('game');
         //Form
         this.inputForm = formBuilder.group({
@@ -46,7 +54,7 @@ var GamePage = (function () {
     }
     GamePage.prototype.ionViewDidLoad = function () {
         console.log('ionViewDidLoad GamePage');
-        if (this.game.gametype == "brave" || this.game.gametype == "estimate") {
+        if (this.game.live == "0") {
             this.arrowNav.lockSwipes(true);
         }
     };
@@ -59,7 +67,7 @@ var GamePage = (function () {
         alert.present();
     };
     //from Game window
-    GamePage.prototype.postScore = function (gametype) {
+    GamePage.prototype.postScore = function () {
         var oldScore = this.cookieProvider.getCookie("gamescoreID" + this.inputForm.value.game_id);
         var newScore = this.inputForm.value.score;
         if (!this.inputForm.valid) {
@@ -71,8 +79,7 @@ var GamePage = (function () {
         else {
             //Send Data
             this.restProvider.postScore(newScore, this.game.id, this.cookieProvider.getCookie("username")).subscribe();
-            //set Cookie for checking if Value is lower than the submitted one, and give out current score
-            this.cookieProvider.setCookie("gamescoreID" + this.game.id, newScore, 120);
+            this.setCookieVar();
             this.refreshCurrentScore();
             this.next();
             this.presentAlert();
@@ -81,21 +88,95 @@ var GamePage = (function () {
     GamePage.prototype.postBool = function () {
         //Send Data
         this.restProvider.postScore(1, this.game.id, this.cookieProvider.getCookie("username")).subscribe();
-        //set Cookie for checking if Value is lower than the submitted one, and give out current score
-        this.cookieProvider.setCookie("gamescoreID" + this.game.id, "Bestanden", 120);
-        console.log(this.cookieProvider.getCookie("gamescoreID" + this.game.id));
+        this.setCookieVar();
         this.refreshCurrentScore();
         this.presentAlert();
+        this.isRepeatable = false;
     };
     GamePage.prototype.showTop5 = function () {
         var _this = this;
-        this.restProvider.showTop5(this.game.id)
-            .subscribe(function (response) {
+        this.restProvider.showTop5(this.game.id, this.game.sort_direction).subscribe(function (response) {
+            if (_this.game.gametype == "time") {
+                for (var i = 0; i < response.length; i++) {
+                    response[i].pivot.value = _this.timeFormat(response[i].pivot.value);
+                }
+            }
+            if (_this.game.gametype == "value") {
+                for (var i = 0; i < response.length; i++) {
+                    response[i].pivot.value = Math.trunc(response[i].pivot.value);
+                }
+            }
             _this.scores = response;
         });
     };
     GamePage.prototype.refreshCurrentScore = function () {
         this.cookie = this.cookieProvider.getCookie("gamescoreID" + this.game.id);
+    };
+    //Time-Operation
+    GamePage.prototype.startTimer = function () {
+        var _this = this;
+        if (!this.isCounting) {
+            this.timeTxt = "Stopp";
+            this.isCounting = true;
+            this.canSend = false;
+            var startTime = Date.now();
+            this.interval = setInterval(function () {
+                var elapsedTime = Date.now() - startTime;
+                _this.durationRAW = (elapsedTime / 1000)
+                    .toFixed(2);
+                _this.time = _this.timeFormat(_this.durationRAW);
+            }, 100);
+        }
+        else {
+            this.canSend = true;
+            this.isCounting = false;
+            this.timeTxt = "Nochmal?";
+            clearInterval(this.interval);
+        }
+    };
+    GamePage.prototype.timeFormat = function (decimalTimeString) {
+        var n = new Date(0, 0);
+        n.setMilliseconds(+decimalTimeString * 60 * 1000);
+        return n.toTimeString().slice(0, 8);
+    };
+    GamePage.prototype.postTime = function () {
+        var oldScore = this.cookieProvider.getCookie("gamescoreID" + this.inputForm.value.game_id);
+        var newScore = this.durationRAW;
+        if (oldScore < newScore && oldScore != 0) {
+            console.log("Diese Zeit ist schlechter als deine Bestzeit");
+        }
+        else {
+            //Send Data
+            this.restProvider.postScore(newScore, this.game.id, this.cookieProvider.getCookie("username")).subscribe();
+            //set Cookie for checking if Value is lower than the submitted one, and give out current score
+            this.setCookieVar();
+            this.refreshCurrentScore();
+            this.next();
+            this.presentAlert();
+        }
+    };
+    GamePage.prototype.setCookieVar = function () {
+        var ck;
+        //case: time
+        if (this.game.gametype == 'time') {
+            ck = this.time;
+            //case brave, just check if done
+        }
+        else if (this.game.gametype == 'brave') {
+            ck = "Bestanden";
+            //case value: no decimal
+        }
+        else if (this.game.gametype == 'value') {
+            ck = Math.trunc(this.inputForm.value.score);
+            //case: decimal
+        }
+        else {
+            ck = this.inputForm.value.score;
+        }
+        this.cookieProvider.setCookie("gamescoreID" + this.game.id, ck, 120);
+    };
+    GamePage.prototype.testCheck = function () {
+        this.restProvider.checkScore();
     };
     //Slidescontroll
     GamePage.prototype.next = function () {
@@ -119,12 +200,12 @@ __decorate([
 ], GamePage.prototype, "arrowNav", void 0);
 GamePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-game',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/'\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>{{game.name}}</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n	{{game.instructions}}\n\n\n	<!-- Placeholder for special interactions, -Timer -->\n\n	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> \n		<ion-slide>\n			<div ngSwitch="{{game.gametype}}">\n					<div *ngSwitchDefault>\n					    <form [formGroup]="inputForm">\n\n						    <ion-item>\n						            <ion-label floating>Dein Ergebniss</ion-label>\n						            <ion-input formControlName="score" type="text"></ion-input>\n						    </ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n						    <button ion-button full color="primary" (click)="postScore()">Absenden</button>	\n					 	</form>\n					</div>\n\n					<div *ngSwitchCase="\'brave\'" [ngClass]="\'brave\'">\n						<button ion-button round [class.button-disabled]="true" (click)="postBool()">Challenge erfolgreich bestanden!</button>	\n					</div>\n\n					<div *ngSwitchCase="\'time\'" [ngClass]="\'time\'">\n						<button ion-button full color="primary">Starte Zeit</button>\n						<button ion-button full color="primary">Absenden</button>		\n					</div>\n\n\n					\n						\n					\n  				</div> \n		</ion-slide>\n\n\n\n		<ion-slide>\n			<button ion-button full color="primary" (click)="showTop5()">Lade Top 5 Score</button>\n			<ion-list>\n\n				<ion-item *ngFor="let score of scores">\n			      {{score.name}} {{score.pivot.value}}\n			    </ion-item>  \n\n		  	</ion-list>\n		</ion-slide> \n	</ion-slides> \n\n</ion-content>\n\n\n\n<ion-footer>\n  <ion-toolbar>\n    <ion-title>Dein aktuelles Ergebniss: {{cookie}}</ion-title>\n<div *ngIf="game.gametype !=\'brave\' && game.gametype !=\'estimate\' ">\n\n    <div right ngSwitch="{{position}}">\n		<div *ngSwitchDefault [ngClass]="\'zero\'">\n		<ion-buttons end>\n        <button ion-button icon-right (click)="next()">Next <ion-icon name="arrow-forward"></ion-icon></button>\n      </ion-buttons>\n		</div>\n\n		<div *ngSwitchCase="\'1\'" [ngClass]="\'one\'">\n			    <ion-buttons end>\n        			<button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Prev</button>\n      			</ion-buttons>\n		</div>		\n								\n  	</div> \n</div>\n\n\n  </ion-toolbar>\n</ion-footer>'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/,
+        selector: 'page-game',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/'\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>{{game.name}}</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n	{{game.instructions}}\n\n\n	<!-- Placeholder for special interactions, -Timer -->\n\n	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> \n		<ion-slide>\n			<div ngSwitch="{{game.gametype}}">\n					<div *ngSwitchDefault>\n\n					    <form [formGroup]="inputForm">\n						    <ion-item>\n						            <ion-label floating>Dein Ergebniss</ion-label>\n						            <ion-input formControlName="score" type="text"></ion-input>\n						    </ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n						    <button ion-button full color="primary" (click)="postScore()">Absenden</button>						 	\n						</form>\n					</div>\n\n					<div *ngSwitchCase="\'brave\'" [ngClass]="\'brave\'">\n						<button ion-button round [disabled]="!isRepeatable" (click)="postBool()">Challenge erfolgreich bestanden!</button>	\n					</div>\n\n					<div *ngSwitchCase="\'time\'" [ngClass]="\'time\'">\n\n						<form [formGroup]="inputForm">\n\n						    <ion-item>\n						            <ion-label floating>Dein Ergebniss</ion-label>\n						            <ion-input formControlName="score" type="text" disabled="true" value="{{time}}"></ion-input>\n						    </ion-item>\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n\n						    <button ion-button full color="primary" (click)="startTimer()">{{timeTxt}}</button>\n\n						    <button ion-button full color="primary" (click)="postTime()" [disabled]="!canSend">Absenden</button>						 	\n						</form>\n					</div>\n\n\n					\n						\n					\n  				</div> \n		</ion-slide>\n\n\n\n		<ion-slide>\n			<button ion-button full color="primary" (click)="showTop5()">Bestenliste aktualisieren</button>\n			<ion-list>\n\n				<ion-item *ngFor="let score of scores">\n			      {{score.name}} {{score.pivot.value}}\n			    </ion-item>  \n\n		  	</ion-list>\n		</ion-slide> \n	</ion-slides> \n\n</ion-content>\n\n\n\n<ion-footer>\n  <ion-toolbar>\n    <ion-title>Dein aktuelles Ergebniss: {{cookie}}</ion-title>\n<div *ngIf="game.gametype !=\'brave\' && game.gametype !=\'estimate\' ">\n\n    <div right ngSwitch="{{position}}">\n		<div *ngSwitchDefault [ngClass]="\'zero\'">\n		<ion-buttons end>\n        <button ion-button icon-right (click)="next()">Next <ion-icon name="arrow-forward"></ion-icon></button>\n      </ion-buttons>\n		</div>\n\n		<div *ngSwitchCase="\'1\'" [ngClass]="\'one\'">\n			    <ion-buttons end>\n        			<button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Prev</button>\n      			</ion-buttons>\n		</div>		\n								\n  	</div> \n</div>\n\n\n  </ion-toolbar>\n</ion-footer>'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/,
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__providers_rest_rest__["a" /* RestProvider */], __WEBPACK_IMPORTED_MODULE_3__providers_cookie_cookie__["a" /* CookieProvider */], __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__providers_rest_rest__["a" /* RestProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__providers_rest_rest__["a" /* RestProvider */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_3__providers_cookie_cookie__["a" /* CookieProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__providers_cookie_cookie__["a" /* CookieProvider */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormBuilder */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormBuilder */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */]) === "function" && _f || Object])
 ], GamePage);
 
+var _a, _b, _c, _d, _e, _f;
 //# sourceMappingURL=game.js.map
 
 /***/ }),
@@ -140,6 +221,7 @@ GamePage = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__providers_rest_rest__ = __webpack_require__(51);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__providers_cookie_cookie__ = __webpack_require__(94);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_home_home__ = __webpack_require__(187);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__ = __webpack_require__(170);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -155,13 +237,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+//Imports for dynamic API-URL by Vidailhet
+
 var LoginPage = (function () {
-    function LoginPage(navCtrl, navParams, formBuilder, restProvider, cookieProvider) {
+    function LoginPage(navCtrl, navParams, formBuilder, restProvider, cookieProvider, envConfiguration) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
         this.formBuilder = formBuilder;
         this.restProvider = restProvider;
         this.cookieProvider = cookieProvider;
+        this.envConfiguration = envConfiguration;
+        var config = envConfiguration.getConfig();
+        this.loginTxt = config.loginTxt;
         this.inputUser = formBuilder.group({
             user: ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].maxLength(16), __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].pattern('[a-zA-Z ]*'), __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required])],
         });
@@ -185,11 +272,12 @@ var LoginPage = (function () {
 }());
 LoginPage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-login',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/login/login.html"*/'<!--\n  Generated template for the LoginPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>login</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n\n\n    <form [formGroup]="inputUser">\n			 \n			    <ion-item>\n			            <ion-label floating>Dein Benutzername</ion-label>\n			            <ion-input formControlName="user" type="text"></ion-input>\n			    </ion-item>\n	<button ion-button full color="primary" (click)="setUser()">Absenden</button>		 \n	</form>\n  		\n			    Zusätzliche Informationen, etc. Dieser Name wierd öffentlich angezeigt, deswegen w&auml;re es nett keine obzönenen Namen zu wählen. Aber mach was du willst. Ich bin ein Textfeld, nicht die Polizei.\n\n\n</ion-content>\n'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/login/login.html"*/,
+        selector: 'page-login',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/login/login.html"*/'<!--\n  Generated template for the LoginPage page.\n\n  See http://ionicframework.com/docs/components/#navigation for more info on\n  Ionic pages and navigation.\n-->\n<ion-header>\n\n  <ion-navbar>\n    <ion-title>login</ion-title>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n\n\n    <form [formGroup]="inputUser">\n			 \n			    <ion-item>\n			            <ion-label floating>Dein Benutzername</ion-label>\n			            <ion-input formControlName="user" type="text"></ion-input>\n			    </ion-item>\n	<button ion-button full color="primary" (click)="setUser()">Absenden</button>		 \n	</form>\n  		{{loginTxt}}\n\n</ion-content>\n'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/login/login.html"*/,
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */], __WEBPACK_IMPORTED_MODULE_3__providers_rest_rest__["a" /* RestProvider */], __WEBPACK_IMPORTED_MODULE_4__providers_cookie_cookie__["a" /* CookieProvider */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__angular_forms__["a" /* FormBuilder */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_3__providers_rest_rest__["a" /* RestProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__providers_rest_rest__["a" /* RestProvider */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_4__providers_cookie_cookie__["a" /* CookieProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__providers_cookie_cookie__["a" /* CookieProvider */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */]) === "function" && _f || Object])
 ], LoginPage);
 
+var _a, _b, _c, _d, _e, _f;
 //# sourceMappingURL=login.js.map
 
 /***/ }),
@@ -247,6 +335,7 @@ module.exports = webpackAsyncContext;
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HomePage; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_ionic_angular__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_gl_ionic2_env_configuration__ = __webpack_require__(170);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -258,21 +347,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
+//Imports for dynamic API-URL by Vidailhet
+
 var HomePage = (function () {
-    function HomePage(navCtrl, navParams) {
+    function HomePage(navCtrl, navParams, envConfiguration) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
+        this.envConfiguration = envConfiguration;
         this.username = navParams.get('name');
+        var config = envConfiguration.getConfig();
+        this.menuTxt = config.menuTxt;
     }
     return HomePage;
 }());
 HomePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-home',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Let the Games begin</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Ionic Menu Starter</h3>\n\n  <p>\n    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will show you the way.\n    Hallo {{username}}\n  </p>\n\n  <button ion-button secondary menuToggle>Toggle Menu</button>\n</ion-content>\n'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/
+        selector: 'page-home',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Let the Games begin</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Willkommen {{username}}</h3>\n\n  <p>\n    {{menuTxt}}\n  </p>\n\n  <button ion-button secondary menuToggle>Toggle Menu</button>\n</ion-content>\n'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */]) === "function" && _c || Object])
 ], HomePage);
 
+var _a, _b, _c;
 //# sourceMappingURL=home.js.map
 
 /***/ }),
@@ -571,9 +666,23 @@ var RestProvider = (function () {
             .catch(this.catchError); // nur body zueruck
     };
     //load the Leaderboard for the selected Game
-    RestProvider.prototype.showTop5 = function (game_id) {
-        var urlVar = this.url + "/score/" + game_id;
+    RestProvider.prototype.showTop5 = function (game_id, sort) {
+        var urlVar;
+        if (sort == 1) {
+            urlVar = this.url + "/scoreR/" + game_id;
+            console.log('asc');
+        }
+        else {
+            urlVar = this.url + "/score/" + game_id;
+            console.log('desc');
+        }
         return this.http.get(urlVar)
+            .map(this.extractData)
+            .do(this.logResponse)
+            .catch(this.catchError);
+    };
+    RestProvider.prototype.checkScore = function () {
+        return this.http.get(this.url, { params: { var1: val1, var2: val2 } })
             .map(this.extractData)
             .do(this.logResponse)
             .catch(this.catchError);
@@ -621,9 +730,10 @@ var RestProvider = (function () {
 }());
 RestProvider = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */], __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */]) === "function" && _b || Object])
 ], RestProvider);
 
+var _a, _b;
 //# sourceMappingURL=rest.js.map
 
 /***/ }),

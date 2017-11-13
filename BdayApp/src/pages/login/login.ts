@@ -7,6 +7,10 @@ import { RestProvider } from'../../providers/rest/rest';
 import { CookieProvider } from '../../providers/cookie/cookie';
 import { HomePage } from '../../pages/home/home';
 
+//Imports for dynamic API-URL by Vidailhet
+import {EnvConfigurationProvider} from "gl-ionic2-env-configuration";
+// You can specify a typing for your configuration to get nice and neat autocompletion
+import {ITestAppEnvConfiguration} from "../../env-configuration/ITestAppEnvConfiguration";
 
 
 @IonicPage()
@@ -16,10 +20,14 @@ import { HomePage } from '../../pages/home/home';
 })
 
 export class LoginPage {
+  public loginTxt;
 
 	inputUser: FormGroup;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private formBuilder:FormBuilder, private restProvider:RestProvider, private cookieProvider:CookieProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private formBuilder:FormBuilder, private restProvider:RestProvider, private cookieProvider:CookieProvider,
+    private envConfiguration: EnvConfigurationProvider<ITestAppEnvConfiguration>) {
+    let config: ITestAppEnvConfiguration = envConfiguration.getConfig();
+    this.loginTxt = config.loginTxt;
 
   	this.inputUser = formBuilder.group({
         user: ['', Validators.compose([Validators.maxLength(16), Validators.pattern('[a-zA-Z ]*'), Validators.required])],

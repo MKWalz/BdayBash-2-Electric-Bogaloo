@@ -18,13 +18,24 @@
 {{Form::label('live', 'Liveauswertung')}}
 {{ Form::checkbox('live', 'value')}}<br/>
 
-{{Form::label('gametype', 'Gametype')}}
+{{Form::label('sort_direction', 'Der höchste Wert gewinnt')}}
+{{ Form::checkbox('sort_direction', 'value')}}<br/>
+
+{{Form::label('gametype', 'Formattype')}}
 {{Form::select('gametype', array(
-    'brave' => 'Mut',
+    'brave' => 'Bestanden',
     'time' => 'Zeit',
     'value'=> 'Punkte',
+    'decimal'=>'Dezimal',
+))}}<br/>
 
-
+{{Form::label('category', 'Spielarten')}}
+{{Form::select('category', array(
+    'brave' => 'Mut',
+    'movement' => 'Bewegung',
+    'skill'=> 'Geschicklichkeit',
+    'quiz' => 'Quiz',
+    'estimate'=> 'Sch&auml;tzen',
 
 ))}}<br/>
 
