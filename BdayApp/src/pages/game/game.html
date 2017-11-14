@@ -48,7 +48,9 @@
 
 						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>
 
-						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>					 	
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>	
+
+						    <button ion-button full color="primary"  (click)="countDown()">Showtime</button>						 	
 						</form>
 					</div>
 

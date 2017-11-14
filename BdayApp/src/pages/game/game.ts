@@ -210,6 +210,30 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
 
       });
     }
+//Countdown
+  countDown(){
+  var endtime = new Date();
+  endtime.setMinutes(endtime.getMinutes() + 1);
+
+  
+  this.interval = setInterval(() => {
+  var now = new Date().getTime();
+  let elapsedTime =  endtime - now;
+  this.durationRAW = (elapsedTime / 1000)
+        .toFixed(2);
+    this.time = this.timeFormat(this.durationRAW);
+
+      if(elapsedTime < 0){
+      clearInterval(this.interval);
+      alert("Die Zeit ist um.");
+  }
+
+    }, 100);
+  console.log(endtime);
+
+
+
+  }
 
   
 
