@@ -29,7 +29,7 @@ class JsonController extends Controller
 		$top5 = $game->player()->orderBy('value', 'asc')->take(5)->get();
 		return response()->json($top5);
 	}
-	
+	//check if free
 	public function get_json_username(Request $request){
 
 			$request = $request->name;
@@ -45,7 +45,7 @@ class JsonController extends Controller
 	}
 		
 
-		//handle request to create new Player
+	//handle request to create new Player
 	public function set_json_player(Request $request){
 			$data = $request->json()->all();
 

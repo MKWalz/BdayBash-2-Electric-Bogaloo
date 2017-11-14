@@ -708,21 +708,6 @@ var RestProvider = (function () {
             .do(this.logResponse)
             .catch(this.catchError);
     };
-    RestProvider.prototype.checkUsername = function (user) {
-        console.log("checke Username");
-        var varUrl = this.url + "/player/";
-        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* Headers */]();
-        headers.append("Accept", 'application/json');
-        headers.append('Content-Type', 'application/json');
-        var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* RequestOptions */]({ headers: headers });
-        var postParams = {
-            name: user
-        };
-        return this.http.post(varUrl, postParams, options)
-            .map(this.extractData)
-            .do(this.logResponse)
-            .catch(this.catchError);
-    };
     RestProvider.prototype.catchError = function (error) {
         console.log(error);
         return __WEBPACK_IMPORTED_MODULE_5_rxjs_Observable__["Observable"].throw(error.json.error || 'Server Error.');
@@ -746,6 +731,21 @@ var RestProvider = (function () {
             sort_direction: sort
         };
         return this.http.post(urlVar, postParams, options)
+            .map(this.extractData)
+            .do(this.logResponse)
+            .catch(this.catchError);
+    };
+    RestProvider.prototype.checkUsername = function (user) {
+        console.log("checke Username");
+        var varUrl = this.url + "/player/";
+        var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* Headers */]();
+        headers.append("Accept", 'application/json');
+        headers.append('Content-Type', 'application/json');
+        var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["d" /* RequestOptions */]({ headers: headers });
+        var postParams = {
+            name: user
+        };
+        return this.http.post(varUrl, postParams, options)
             .map(this.extractData)
             .do(this.logResponse)
             .catch(this.catchError);

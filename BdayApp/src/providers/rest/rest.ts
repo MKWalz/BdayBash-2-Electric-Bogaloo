@@ -58,29 +58,6 @@ export class RestProvider {
 
     }
 
-   public checkUsername(user){
-    console.log("checke Username");
-    let varUrl = this.url+"/player/";
-
-    var headers = new Headers();
-    headers.append("Accept", 'application/json');
-    headers.append('Content-Type', 'application/json' );
-    let options = new RequestOptions({ headers: headers });
- 
-    let postParams = { //change so you can post input
-      name: user
-    }
-    
-    return this.http.post(varUrl, postParams, options)
-    .map(this.extractData)
-    .do(this.logResponse)
-    .catch(this.catchError);
-
-    }
-
-
-    
-
 
   private catchError(error:Response | any){
   	console.log(error);
@@ -115,6 +92,26 @@ export class RestProvider {
     .catch(this.catchError);
 
   }
+
+    public checkUsername(user){
+    console.log("checke Username");
+    let varUrl = this.url+"/player/";
+
+    var headers = new Headers();
+    headers.append("Accept", 'application/json');
+    headers.append('Content-Type', 'application/json' );
+    let options = new RequestOptions({ headers: headers });
+ 
+    let postParams = { //change so you can post input
+      name: user
+    }
+    
+    return this.http.post(varUrl, postParams, options)
+    .map(this.extractData)
+    .do(this.logResponse)
+    .catch(this.catchError);
+
+    }
 
   postUser(user) {
     var headers = new Headers();
