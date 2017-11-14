@@ -737,7 +737,7 @@ var RestProvider = (function () {
     };
     RestProvider.prototype.checkUsername = function (user) {
         console.log("checke Username");
-        var varUrl = this.url + "/player/";
+        var varUrl = this.url + "/player";
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* Headers */]();
         headers.append("Accept", 'application/json');
         headers.append('Content-Type', 'application/json');

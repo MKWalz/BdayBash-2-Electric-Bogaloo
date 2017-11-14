@@ -95,7 +95,7 @@ export class RestProvider {
 
     public checkUsername(user){
     console.log("checke Username");
-    let varUrl = this.url+"/player/";
+    let varUrl = this.url+"/player";
 
     var headers = new Headers();
     headers.append("Accept", 'application/json');
