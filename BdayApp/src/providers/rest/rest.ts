@@ -58,13 +58,24 @@ export class RestProvider {
 
     }
 
-    checkScore(){
-      return this.http.get(this.url, {params: {var1: val1, var2: val2}})
-      .map(this.extractData)
-      .do(this.logResponse) 
-      .catch(this.catchError); 
-      
+   public checkUsername(user){
+    console.log("checke Username");
+    let varUrl = this.url+"/player/";
+
+    var headers = new Headers();
+    headers.append("Accept", 'application/json');
+    headers.append('Content-Type', 'application/json' );
+    let options = new RequestOptions({ headers: headers });
+ 
+    let postParams = { //change so you can post input
+      name: user
+    }
     
+    return this.http.post(varUrl, postParams, options)
+    .map(this.extractData)
+    .do(this.logResponse)
+    .catch(this.catchError);
+
     }
 
 
@@ -84,7 +95,7 @@ export class RestProvider {
   	return res.json();
   }
 
-  postScore(score, game_id, player_id) {
+  postScore(score, game_id, player_id, sort) {
     let urlVar = this.url+ "/store_score";
     var headers = new Headers();
     headers.append("Accept", 'application/json');
@@ -94,7 +105,8 @@ export class RestProvider {
     let postParams = { //change so you can post input
       game_id: game_id,
       name: player_id,
-      value: score
+      value: score,
+      sort_direction: sort
     }
     
     return this.http.post(urlVar, postParams, options)

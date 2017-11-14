@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -21,11 +21,12 @@ import {ITestAppEnvConfiguration} from "../../env-configuration/ITestAppEnvConfi
 
 export class LoginPage {
   public loginTxt;
+  public checkName;
 
 	inputUser: FormGroup;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private formBuilder:FormBuilder, private restProvider:RestProvider, private cookieProvider:CookieProvider,
-    private envConfiguration: EnvConfigurationProvider<ITestAppEnvConfiguration>) {
+    private envConfiguration: EnvConfigurationProvider<ITestAppEnvConfiguration>, public alertCtrl: AlertController) {
     let config: ITestAppEnvConfiguration = envConfiguration.getConfig();
     this.loginTxt = config.loginTxt;
 
@@ -46,14 +47,29 @@ export class LoginPage {
   }
 
   setUser(){
-
     let input = this.inputUser.value.user;
-  	this.cookieProvider.setCookie("username",input, 20); //set Cookie, need for identification
-  	this.restProvider.postUser(input).subscribe(data =>console.log(data));//save Username in DB
-    this.navCtrl.setRoot(HomePage,{name : input}); //Push next site
-    console.log(document.cookie);
 
-	}
+    this.restProvider.checkUsername(input).subscribe((response)=> {
+
+    if(response[0] == "exists"){
+
+      const alert = this.alertCtrl.create({
+      title: 'Dieser Name ist bereits vergeben.',
+      subTitle: 'Bitte w&auml;hle einen anderen Namen.',
+      buttons: ['Verstanden']
+    });
+
+    alert.present();
+
+    } else {
+      
+      this.cookieProvider.setCookie("username",input, 20); //set Cookie, need for identification
+      this.restProvider.postUser(input).subscribe(data =>console.log(data));//save Username in DB
+      this.navCtrl.setRoot(HomePage,{name : input}); //Push next site
+      console.log(document.cookie); }
+  
+  });
+}
 
 }
 

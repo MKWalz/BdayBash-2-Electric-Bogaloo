@@ -16,14 +16,14 @@ export class GamePage {
 
   @ViewChild('arrowNav') arrowNav: any; 
 
-	game:{'id','gametype', 'sort_direction'};
+	game:{'id','gametype', 'sort_direction', 'repeatable'};
 	inputForm: FormGroup;
   cookie: string ="";
   position:"";
 
   //time variables
-  time: Integer = 0;
-  durationRAW: Integer = 0;
+  time: int = 0;
+  durationRAW:int = 0;
   interval:"";
   isCounting : boolean = false;
   canSend : boolean = false;
@@ -47,6 +47,10 @@ export class GamePage {
     });
 
     this.refreshCurrentScore();
+
+    if(this.cookie != ""){ //keep buttons disabled after changeing back to list
+      this.checkRepeatable(); 
+    }
   }
 
   ionViewDidLoad() { // Disables Swipe if there is no live Ranking
@@ -75,24 +79,27 @@ postScore(){
     if(!this.inputForm.valid){
         console.log("error!");
 
-    }else if(oldScore > newScore) {
-
-        console.log("Dieser Wert ist kleiner als der bereits gespeicherte!");
-
     } else {
 
       //Send Data
 		  this.restProvider.postScore(
 			newScore,
   		this.game.id,
-      this.cookieProvider.getCookie("username")
-			).subscribe();
-
-
-      this.setCookieVar();
+      this.cookieProvider.getCookie("username"),
+      this.game.sort_direction,
+			).subscribe((response)=> {
+      let a = response[0];
+      this.setCookieVar(a);
       this.refreshCurrentScore();
       this.next();
       this.presentAlert();
+      this.checkRepeatable(); 
+      console.log(response);
+
+      });
+
+
+
    	}
 
 	}
@@ -104,14 +111,18 @@ postBool(){
       this.restProvider.postScore(
       1,
       this.game.id,
-      this.cookieProvider.getCookie("username")
-      ).subscribe();
-
-      this.setCookieVar();
-
+      this.cookieProvider.getCookie("username"),
+      this.game.sort_direction,
+      ).subscribe((response)=> {
+      let a = response[0];
+      this.setCookieVar(a);
       this.refreshCurrentScore();
+      this.next();
       this.presentAlert();
-      this.isRepeatable = false;
+      this.checkRepeatable(); 
+      console.log(response);
+
+      });
 
   }
 
@@ -140,6 +151,7 @@ postBool(){
 
   refreshCurrentScore(){
     this.cookie = this.cookieProvider.getCookie("gamescoreID"+this.game.id);
+
   }
 
 //Time-Operation
@@ -182,33 +194,33 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
   let oldScore = this.cookieProvider.getCookie("gamescoreID"+this.inputForm.value.game_id);
   let newScore = this.durationRAW;
   
-     if(oldScore < newScore && oldScore != 0) {
-
-        console.log("Diese Zeit ist schlechter als deine Bestzeit");
-
-    } else {
-
       //Send Data
       this.restProvider.postScore(
       newScore,
       this.game.id,
-      this.cookieProvider.getCookie("username")
-      ).subscribe();
-
-      //set Cookie for checking if Value is lower than the submitted one, and give out current score
-      this.setCookieVar();
-      
+      this.cookieProvider.getCookie("username"),
+      this.game.sort_direction
+      ).subscribe((response)=> {
+      let a = response[0];
+      this.setCookieVar(a);
       this.refreshCurrentScore();
       this.next();
       this.presentAlert();
+      this.checkRepeatable(); 
+
+      });
     }
 
-  }
+  
 
-  setCookieVar(){ // changes the cookie value to the different gametypes
+  setCookieVar(message){ // changes the cookie value to the different gametypes
     let ck;
 
-    //case: time
+    if(message == 'noChange'){
+      //do nothing, Cookie wasn't changed
+    }else{
+
+    //case: time, maybe change to switch
     if(this.game.gametype == 'time'){
       ck = this.time;
     //case brave, just check if done
@@ -219,7 +231,7 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
       ck = Math.trunc(this.inputForm.value.score);
     //case: decimal
     }  else {
-      ck = this.inputForm.value.score;
+      ck = Number(this.inputForm.value.score).toFixed(2);
     }
 
 
@@ -228,14 +240,16 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
       ck,
       120
       );
+    
+    }
+
 
   }
 
-  testCheck(){
-    this.restProvider.checkScore();
+  checkRepeatable(){
+    if(this.game.repeatable == 0)
+    this.isRepeatable = false;
   }
-
-
 
   //Slidescontroll
   next(){// wechsele den Viewport auf den nächsten <slide> im html
@@ -254,5 +268,7 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
     }
     
   }
+
+
 
 }

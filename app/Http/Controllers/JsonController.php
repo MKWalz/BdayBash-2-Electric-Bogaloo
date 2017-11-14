@@ -30,6 +30,19 @@ class JsonController extends Controller
 		return response()->json($top5);
 	}
 	
+	public function get_json_username(Request $request){
+
+			$request = $request->name;
+			$player = Player::where('name', '=', $request)->get();
+			if(count($player) > 0)
+			{
+			$answer = "exists";
+			}
+			else
+			$answer = "free";
+		
+		return response([$answer],200); 
+	}
 		
 
 		//handle request to create new Player
@@ -48,28 +61,79 @@ class JsonController extends Controller
 		}
 
 
-	//handle Request to  set the score for the game
-	public function set_json_score(Request $request){
-
+			public function set_json_score(Request $request){
 
 			$data = $request->json()->all();
 			$player = Player::where('name', $data['name'])->first();
 
 			//check if there is already a entry
-
 			if(!$player->game->contains($data['game_id'])){
 
 				$player->game()->attach($data['game_id'], array('value' => $data['value']));
-				return response(["Create New"],200);   
+				return response(["createNew"],200);   
 			
+			//update handle, 4 Cases:
 			} else {
+				$varDB = (int)$player->game->find(request('game_id'))->pivot->value;
+				$varReq = (int)request('value');
+				$varSort = (int)request('sort_direction');
+ 
+				
+				 if($varSort == 1){
 
-				$player->game()->updateExistingPivot($data['game_id'], array('value' => $data['value'])); 
-				return response(["Update Old"],200); 
+
+				 	//saved value is higher than the input one, change cause the lowest value wins
+				 	if($varDB > $varReq){
+
+						$player->game()->updateExistingPivot($data['game_id'], array('value' => $data['value'])); 
+				 		return response(["updateLow"],200); 
+					
+					} else {
+				 		return response(["noChange"],200); 
+				 	}
+
+				  
+				} else if($varSort == 0){
+
+					if($varDB < $varReq){
+
+					$player->game()->updateExistingPivot($data['game_id'], array('value' => $data['value'])); 
+					return response(["updateHigh"],200); 
+					
+					} else {
+						return response(["noChange"],200);
+					}
+					
+
+				}
 			
 			}
 
 		}
+
+
+	//handle Request to  set the score for the game
+	// public function set_json_score(Request $request){
+
+
+	// 		$data = $request->json()->all();
+	// 		$player = Player::where('name', $data['name'])->first();
+
+	// 		//check if there is already a entry
+
+	// 		if(!$player->game->contains($data['game_id'])){
+
+	// 			$player->game()->attach($data['game_id'], array('value' => $data['value']));
+	// 			return response(["Create New"],200);   
+			
+	// 		} else {
+
+	// 			$player->game()->updateExistingPivot($data['game_id'], array('value' => $data['value'])); 
+	// 			return response(["Update Old"],200); 
+			
+	// 		}
+
+	// 	}
 			
 
 }

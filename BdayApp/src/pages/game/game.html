@@ -9,13 +9,15 @@
 
 
 <ion-content padding>
-	{{game.instructions}}
+
+	<p [innerHTML]="game.instructions"></p> 
 
 
 	<!-- Placeholder for special interactions, -Timer -->
 
 	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> 
 		<ion-slide>
+
 			<div ngSwitch="{{game.gametype}}">
 					<div *ngSwitchDefault>
 
@@ -26,7 +28,7 @@
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
-						    <button ion-button full color="primary" (click)="postScore()">Absenden</button>						 	
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore()">Absenden</button>						 	
 						</form>
 					</div>
 
@@ -44,9 +46,9 @@
 						    </ion-item>
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
 
-						    <button ion-button full color="primary" (click)="startTimer()">{{timeTxt}}</button>
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>
 
-						    <button ion-button full color="primary" (click)="postTime()" [disabled]="!canSend">Absenden</button>						 	
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>					 	
 						</form>
 					</div>
 
@@ -78,7 +80,7 @@
 <ion-footer>
   <ion-toolbar>
     <ion-title>Dein aktuelles Ergebniss: {{cookie}}</ion-title>
-<div *ngIf="game.gametype !='brave' && game.gametype !='estimate' ">
+<div *ngIf="game.live == 1 ">
 
     <div right ngSwitch="{{position}}">
 		<div *ngSwitchDefault [ngClass]="'zero'">

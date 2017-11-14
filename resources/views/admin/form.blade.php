@@ -18,7 +18,7 @@
 {{Form::label('live', 'Liveauswertung')}}
 {{ Form::checkbox('live', 'value')}}<br/>
 
-{{Form::label('sort_direction', 'Der höchste Wert gewinnt')}}
+{{Form::label('sort_direction', 'Der niedrigste Wert gewinnt')}}
 {{ Form::checkbox('sort_direction', 'value')}}<br/>
 
 {{Form::label('gametype', 'Formattype')}}
