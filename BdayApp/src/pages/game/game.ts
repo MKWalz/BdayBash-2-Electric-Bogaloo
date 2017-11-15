@@ -73,7 +73,6 @@ export class GamePage {
 
 //from Game window
 postScore(){
-  let oldScore = this.cookieProvider.getCookie("gamescoreID"+this.inputForm.value.game_id);
   let newScore = this.inputForm.value.score;
 
     if(!this.inputForm.valid){
@@ -191,7 +190,6 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
 }
 
   postTime(){
-  let oldScore = this.cookieProvider.getCookie("gamescoreID"+this.inputForm.value.game_id);
   let newScore = this.durationRAW;
   
       //Send Data
@@ -235,6 +233,9 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
 
   }
 
+  goHome(){
+    this.navCtrl.popToRoot();
+  }
   
 
   setCookieVar(message){ // changes the cookie value to the different gametypes

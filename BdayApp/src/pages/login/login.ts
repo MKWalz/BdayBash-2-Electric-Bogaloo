@@ -21,6 +21,7 @@ import {ITestAppEnvConfiguration} from "../../env-configuration/ITestAppEnvConfi
 
 export class LoginPage {
   public loginTxt;
+  public loginPic;
   public checkName;
 
 	inputUser: FormGroup;
@@ -29,6 +30,7 @@ export class LoginPage {
     private envConfiguration: EnvConfigurationProvider<ITestAppEnvConfiguration>, public alertCtrl: AlertController) {
     let config: ITestAppEnvConfiguration = envConfiguration.getConfig();
     this.loginTxt = config.loginTxt;
+    this.loginPic = config.loginPic;
 
   	this.inputUser = formBuilder.group({
         user: ['', Validators.compose([Validators.maxLength(16), Validators.pattern('[a-zA-Z ]*'), Validators.required])],

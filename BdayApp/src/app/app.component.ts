@@ -19,6 +19,8 @@ export class MyApp {
   rootPage: any = LoginPage; // need to change to startsite
 
   pages: any;
+  pagesVar: any;
+
 
   constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, public restProvider: RestProvider) {
     this.initializeApp();
@@ -26,6 +28,7 @@ export class MyApp {
     this.restProvider.getGameData()
     .subscribe((response)=> {
          this.pages = response;
+         this.pagesVar = response;
          console.log(this.pages);
      });
 
@@ -52,5 +55,20 @@ export class MyApp {
       game: game
     });
   } 
+
+
+getItems(ev: any) {
+  this.pages = this.pagesVar;
+
+    // set val to the value of the searchbar
+    let val = ev.target.value;
+
+    // if the value is an empty string don't filter the items
+    if (val && val.trim() != '') {
+      this.pages = this.pages.filter((page) => {
+        return (page.name.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      })
+    }
+  }
   
 }

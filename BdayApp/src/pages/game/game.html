@@ -1,8 +1,15 @@
 
 <ion-header>
-
-  <ion-navbar>
+  	  <ion-navbar hideBackButton>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
     <ion-title>{{game.name}}</ion-title>
+    <ion-buttons end>
+<button (click)="goHome()">
+<ion-icon name="home" style="display: inline-block;font-size:2.5em;"></ion-icon>
+</button>
+</ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -81,19 +88,19 @@
 
 <ion-footer>
   <ion-toolbar>
-    <ion-title>Dein aktuelles Ergebniss: {{cookie}}</ion-title>
+    <ion-title>Dein aktuelles Ergebnisπ: {{cookie}}</ion-title>
 <div *ngIf="game.live == 1 ">
 
     <div right ngSwitch="{{position}}">
 		<div *ngSwitchDefault [ngClass]="'zero'">
 		<ion-buttons end>
-        <button ion-button icon-right (click)="next()">Next <ion-icon name="arrow-forward"></ion-icon></button>
+        <button ion-button icon-right (click)="next()">Top10 <ion-icon name="arrow-forward"></ion-icon></button>
       </ion-buttons>
 		</div>
 
 		<div *ngSwitchCase="'1'" [ngClass]="'one'">
 			    <ion-buttons end>
-        			<button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Prev</button>
+        			<button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Zur&uuml;</button>
       			</ion-buttons>
 		</div>		
 								

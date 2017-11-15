@@ -16,11 +16,13 @@ import {ITestAppEnvConfiguration} from "../../env-configuration/ITestAppEnvConfi
 export class HomePage {
 	public username;
 	public menuTxt;
+	public menuPic;
 
   constructor(public navCtrl: NavController, private navParams: NavParams, private envConfiguration: EnvConfigurationProvider<ITestAppEnvConfiguration>) {
   	this.username = navParams.get('name');
   	let config: ITestAppEnvConfiguration = envConfiguration.getConfig();
     this.menuTxt = config.menuTxt;
+    this.menuPic = config.menuPic;
 
 
   }

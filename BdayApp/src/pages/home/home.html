@@ -9,10 +9,8 @@
 
 <ion-content padding>
   <h3>Willkommen {{username}}</h3>
-
-  <p>
-    {{menuTxt}}
-  </p>
-
+<p [innerHTML]="menuPic"></p> 
+<p [innerHTML]="menuTxt"></p> 
+ 
   <button ion-button secondary menuToggle>Toggle Menu</button>
 </ion-content>

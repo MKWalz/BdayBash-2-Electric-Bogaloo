@@ -20,13 +20,13 @@ class JsonController extends Controller
 
 	//provide the current Top5 Player Score
 	public function get_json_top5(Game $game){
-		$top5 = $game->player()->orderBy('value', 'desc')->take(5)->get();
+		$top5 = $game->player()->orderBy('value', 'desc')->take(10)->get();
 		return response()->json($top5);
 	}
 
 	
 	public function get_json_top5R(Game $game){
-		$top5 = $game->player()->orderBy('value', 'asc')->take(5)->get();
+		$top5 = $game->player()->orderBy('value', 'asc')->take(10)->get();
 		return response()->json($top5);
 	}
 	//check if free

@@ -15,7 +15,7 @@
 
 <ion-content padding>
 
-
+    <p [innerHTML]="loginPic"></p> 
 
     <form [formGroup]="inputUser">
 			 
@@ -25,6 +25,8 @@
 			    </ion-item>
 	<button ion-button full color="primary" (click)="setUser()">Absenden</button>		 
 	</form>
-  		{{loginTxt}}
+
+    <p [innerHTML]="loginTxt"></p> 
+
 
 </ion-content>
