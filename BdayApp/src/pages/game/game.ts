@@ -29,9 +29,11 @@ export class GamePage {
   canSend : boolean = false;
   timeTxt: string="Start";
   
-
   //repeatable variable
   isRepeatable : boolean = true;
+
+  //harcode values, for special games
+  specialVar:"";
 
 
   //top5
@@ -42,15 +44,16 @@ export class GamePage {
   	//Form
   	this.inputForm = formBuilder.group({
         score: ['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required])],
+        scoreDec: ['', Validators.compose([Validators.maxLength(10), Validators.required])],
         game_id : '',
         player_id : '',
     });
-
     this.refreshCurrentScore();
 
     if(this.cookie != ""){ //keep buttons disabled after changeing back to list
       this.checkRepeatable(); 
     }
+    this.checkForSpecialGame(this.game.gametype);
   }
 
   ionViewDidLoad() { // Disables Swipe if there is no live Ranking
@@ -63,8 +66,8 @@ export class GamePage {
   presentAlert() {
 
     const alert = this.alertCtrl.create({
-      title: 'Jauchzet, frohlocket!',
-      subTitle: 'Dein Ergebnis wurde erfolgreich gespeichert.',
+      title: 'Achtung!',
+      subTitle: 'Dein Ergebnis konnte nicht gespeichert werden. Warte einen Moment und versuche es dann nochmal. Sollte es dann immer noch Probleme geben, wende dich bitte an den Admin',
       buttons: ['Verstanden']
     });
 
@@ -87,14 +90,13 @@ postScore(){
       this.cookieProvider.getCookie("username"),
       this.game.sort_direction,
 			).subscribe((response)=> {
-      let a = response[0];
-      this.setCookieVar(a);
-      this.refreshCurrentScore();
-      this.next();
-      this.presentAlert();
-      this.checkRepeatable(); 
-      console.log(response);
 
+      let a = response[0];
+      this.afterPostActions(a);
+
+      }, error => {
+        console.log("error Score");
+        this.presentAlert();
       });
 
 
@@ -102,8 +104,6 @@ postScore(){
    	}
 
 	}
-
-
 
 postBool(){
       //Send Data
@@ -113,14 +113,13 @@ postBool(){
       this.cookieProvider.getCookie("username"),
       this.game.sort_direction,
       ).subscribe((response)=> {
-      let a = response[0];
-      this.setCookieVar(a);
-      this.refreshCurrentScore();
-      this.next();
-      this.presentAlert();
-      this.checkRepeatable(); 
-      console.log(response);
 
+      let a = response[0];
+      this.afterPostActions(a);
+
+      }, error => {
+        console.log("error Bool");
+        this.presentAlert();
       });
 
   }
@@ -128,14 +127,14 @@ postBool(){
 
   showTop5(){
       this.restProvider.showTop5(this.game.id, this.game.sort_direction).subscribe((response)=> {
-
-        if(this.game.gametype == "time"){ // Convert Data in Time Format
+        let a = this.game.gametype;
+        if(a == "time" || a == "count1" || a == "count2" || a == "coin"){ // Convert Data in Time Format
           for(var i = 0; i < response.length; i++) {
           response[i].pivot.value = this.timeFormat(response[i].pivot.value);
           }
         }
 
-        if(this.game.gametype == "value"){ // Point without Decimal
+        if(a == "value"){ // Point without Decimal
           for(var i = 0; i < response.length; i++) {
           response[i].pivot.value =Math.trunc(response[i].pivot.value);
 
@@ -199,39 +198,116 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
       this.cookieProvider.getCookie("username"),
       this.game.sort_direction
       ).subscribe((response)=> {
+
       let a = response[0];
+      this.afterPostActions(a);
+      
+      }, error => {
+        console.log("Error Time");
+        this.presentAlert();
+      }
+      );
+    }
+
+  afterPostActions(a){
+
       this.setCookieVar(a);
       this.refreshCurrentScore();
       this.next();
-      this.presentAlert();
       this.checkRepeatable(); 
+  }
 
-      });
+
+  postCoin(){
+  const bestTime = 3;
+  const timePunish = 3 * 100;
+  const bestScore = 5.79;
+
+  var newScore = this.durationRAW;
+
+  var a = Math.round(newScore - bestTime);
+
+      var c = parseFloat(this.inputForm.value.scoreDec);
+      c =  Math.abs(c - bestScore); 
+      c *= timePunish; 
+      c = (parseFloat(newScore) + c); 
+      this.specialVar = c;
+
+      this.restProvider.postScore(
+      c,
+      this.game.id,
+      this.cookieProvider.getCookie("username"),
+      this.game.sort_direction
+      ).subscribe((response)=> {
+
+      let a = response[0];
+      this.afterPostActions(a);
+      
+      }, error => {
+        console.log("Error Time");
+        this.presentAlert();
+      }
+      );   
+
+
+  }
+
+//Countdown Operationen
+//These Games need special values, hardcoded
+checkForSpecialGame(gametype){
+
+    switch(gametype) {
+      case "count1":
+          this.specialVar = 10;
+          this.time = this.timeFormat(this.specialVar * 60);
+          break;
+      case "count2":
+          this.specialVar = 5;
+          this.time = this.timeFormat(this.specialVar * 60);
+          break;
+      default:
+          break;
     }
-//Countdown
-  countDown(){
-  var endtime = new Date();
-  endtime.setMinutes(endtime.getMinutes() + 1);
+}
 
-  
+
+countDown(){
+
+if(!this.isCounting){
+
+  this.timeTxt = "Stopp";
+  this.isCounting = true;
+  this.canSend = false;
+
+  var endtime = new Date();
+  endtime.setMinutes(endtime.getMinutes() + this.specialVar);
+
   this.interval = setInterval(() => {
   var now = new Date().getTime();
   let elapsedTime =  endtime - now;
-  this.durationRAW = (elapsedTime / 1000)
-        .toFixed(2);
-    this.time = this.timeFormat(this.durationRAW);
+  this.durationRAW = (elapsedTime / 1000).toFixed(2);
+  this.time = this.timeFormat(this.durationRAW);
 
-      if(elapsedTime < 0){
+    if(elapsedTime < 0){
       clearInterval(this.interval);
       alert("Die Zeit ist um.");
-  }
+    }
 
     }, 100);
-  console.log(endtime);
 
 
+
+  } else {
+  this.canSend = true;
+  this.isCounting = false;
+  this.timeTxt = "Nochmal?";
+  clearInterval(this.interval);
 
   }
+
+}
+
+
 
   goHome(){
     this.navCtrl.popToRoot();
@@ -246,8 +322,8 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
     }else{
 
     //case: time, maybe change to switch
-    if(this.game.gametype == 'time'){
-      ck = this.time;
+    if(this.game.gametype == 'decimal'){
+      ck = Number(this.inputForm.value.score).toFixed(2);
     //case brave, just check if done
     } else if (this.game.gametype == 'brave'){
       ck = "Bestanden";
@@ -255,8 +331,11 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
     } else if (this.game.gametype == 'value'){
       ck = Math.trunc(this.inputForm.value.score);
     //case: decimal
+    } else if (this.game.gametype == 'coin'){
+      ck = this.timeFormat(this.specialVar);
+    //case: decimal
     }  else {
-      ck = Number(this.inputForm.value.score).toFixed(2);
+      ck = this.time;
     }
 
 

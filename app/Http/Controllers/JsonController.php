@@ -74,8 +74,8 @@ class JsonController extends Controller
 			
 			//update handle, 4 Cases:
 			} else {
-				$varDB = (int)$player->game->find(request('game_id'))->pivot->value;
-				$varReq = (int)request('value');
+				$varDB = (float)$player->game->find(request('game_id'))->pivot->value;
+				$varReq = (float)request('value');
 				$varSort = (int)request('sort_direction');
  
 				

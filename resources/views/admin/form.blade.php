@@ -27,6 +27,9 @@
     'time' => 'Zeit',
     'value'=> 'Punkte',
     'decimal'=>'Dezimal',
+    'coin'=>'M&uuml;nzspiel',
+    'count1'=>'Countdown Spiel 1',
+    'count2'=>'Countdown Spiel 2',
 ))}}<br/>
 
 {{Form::label('category', 'Spielarten')}}

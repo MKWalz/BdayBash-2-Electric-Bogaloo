@@ -27,15 +27,17 @@
 
 			<div ngSwitch="{{game.gametype}}">
 					<div *ngSwitchDefault>
-
-					    <form [formGroup]="inputForm">
+					<form [formGroup]="inputForm">
 						    <ion-item>
 						            <ion-label floating>Dein Ergebniss</ion-label>
-						            <ion-input formControlName="score" type="text"></ion-input>
+						            <ion-input formControlName="score" type="text" disabled="true" value="{{time}}"></ion-input>
 						    </ion-item>
-
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
-						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore()">Absenden</button>						 	
+							
+							<button ion-button full color="primary" [disabled]="!isRepeatable" (click)="countDown()">{{timeTxt}}</button>		
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>	
+
+						    				 	
 						</form>
 					</div>
 
@@ -56,29 +58,73 @@
 						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>
 
 						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>	
-
-						    <button ion-button full color="primary"  (click)="countDown()">Showtime</button>						 	
+					 	
 						</form>
 					</div>
 
+					<div *ngSwitchCase="'decimal'" [ngClass]="'decimal'">
+						<form [formGroup]="inputForm">
+						    <ion-item>
+						            <ion-label floating>Dein Ergebniss</ion-label>
+						            <ion-input formControlName="score" type="text"></ion-input>
+						    </ion-item>
 
+						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore()">Absenden</button>						 	
+						</form>
+					</div>	
 					
-						
-					
-  				</div> 
+				<div *ngSwitchCase="'value'" [ngClass]="'value'">
+						<form [formGroup]="inputForm">
+						    <ion-item>
+						            <ion-label floating>Dein Ergebniss</ion-label>
+						            <ion-input formControlName="score" type="text"></ion-input>
+						    </ion-item>
+
+						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore()">Absenden</button>						 	
+						</form>	
+				</div>	
+
+				<div *ngSwitchCase="'coin'" [ngClass]="'coin'">
+					<form [formGroup]="inputForm">
+					<ion-item>
+
+						<ion-label floating>Deine Zeite</ion-label>
+						<ion-input formControlName="score" type="text" disabled="true" value="{{time}}"></ion-input>
+
+					</ion-item>
+							
+					<ion-item>
+						<ion-label floating>Dein Ergebnis</ion-label>
+						<ion-input formControlName="scoreDec" type="number"></ion-input>
+					</ion-item>
+
+						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
+
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>
+
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postCoin()" [disabled]="!canSend">Absenden</button>	
+					 	
+					</form>
+				</div>	
+  			</div> 
 		</ion-slide>
 
 
 
 		<ion-slide>
-			<button ion-button full color="primary" (click)="showTop5()">Bestenliste aktualisieren</button>
-			<ion-list>
 
+			<ion-list>
 				<ion-item *ngFor="let score of scores">
 			      {{score.name}} {{score.pivot.value}}
 			    </ion-item>  
-
 		  	</ion-list>
+		  	<ion-buttons>
+				<button (click)="showTop5()">
+					<ion-icon name="refresh" style="display: inline-block;font-size:2.5em;"></ion-icon>
+				</button>
+			</ion-buttons>
 		</ion-slide> 
 	</ion-slides> 
 
@@ -88,7 +134,7 @@
 
 <ion-footer>
   <ion-toolbar>
-    <ion-title>Dein aktuelles Ergebnisπ: {{cookie}}</ion-title>
+    <ion-title>Dein aktuelles Ergebnis: {{cookie}}</ion-title>
 <div *ngIf="game.live == 1 ">
 
     <div right ngSwitch="{{position}}">
@@ -100,7 +146,7 @@
 
 		<div *ngSwitchCase="'1'" [ngClass]="'one'">
 			    <ion-buttons end>
-        			<button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Zur&uuml;</button>
+        			<button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Zur&uuml;ck</button>
       			</ion-buttons>
 		</div>		
 								
