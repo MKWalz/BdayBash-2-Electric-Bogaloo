@@ -47,10 +47,16 @@ var GamePage = (function () {
         //Form
         this.inputForm = formBuilder.group({
             score: ['', __WEBPACK_IMPORTED_MODULE_4__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_4__angular_forms__["f" /* Validators */].maxLength(10), __WEBPACK_IMPORTED_MODULE_4__angular_forms__["f" /* Validators */].pattern('[0-9]*'), __WEBPACK_IMPORTED_MODULE_4__angular_forms__["f" /* Validators */].required])],
-            scoreDec: ['', __WEBPACK_IMPORTED_MODULE_4__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_4__angular_forms__["f" /* Validators */].maxLength(10), __WEBPACK_IMPORTED_MODULE_4__angular_forms__["f" /* Validators */].required])],
             game_id: '',
             player_id: '',
         });
+        this.inputFormDec = formBuilder.group({
+            score: ['', __WEBPACK_IMPORTED_MODULE_4__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_4__angular_forms__["f" /* Validators */].maxLength(10), __WEBPACK_IMPORTED_MODULE_4__angular_forms__["f" /* Validators */].pattern('[0-9]*'), __WEBPACK_IMPORTED_MODULE_4__angular_forms__["f" /* Validators */].required])],
+            helpscore: '',
+            game_id: '',
+            player_id: '',
+        });
+        // ['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required])]
         this.refreshCurrentScore();
         if (this.cookie != "") {
             this.checkRepeatable();
@@ -72,22 +78,36 @@ var GamePage = (function () {
         alert.present();
     };
     //from Game window
-    GamePage.prototype.postScore = function () {
-        var _this = this;
-        var newScore = this.inputForm.value.score;
-        if (!this.inputForm.valid) {
-            console.log("error!");
+    GamePage.prototype.postScore = function (type) {
+        var newScore = 0;
+        if (type == "dec") {
+            newScore = this.inputFormDec.value.score;
+            if (!this.inputFormDec.valid) {
+                console.log("error!");
+            }
+            else {
+                this.sendScore(newScore);
+            }
         }
         else {
-            //Send Data
-            this.restProvider.postScore(newScore, this.game.id, this.cookieProvider.getCookie("username"), this.game.sort_direction).subscribe(function (response) {
-                var a = response[0];
-                _this.afterPostActions(a);
-            }, function (error) {
-                console.log("error Score");
-                _this.presentAlert();
-            });
+            newScore = this.inputForm.value.score;
+            if (!this.inputFormDec.valid) {
+                console.log("error!");
+            }
+            else {
+                this.sendScore(newScore);
+            }
         }
+    };
+    GamePage.prototype.sendScore = function (newScore) {
+        var _this = this;
+        this.restProvider.postScore(newScore, this.game.id, this.cookieProvider.getCookie("username"), this.game.sort_direction).subscribe(function (response) {
+            var a = response[0];
+            _this.afterPostActions(a);
+        }, function (error) {
+            console.log("error Score");
+            _this.presentAlert();
+        });
     };
     GamePage.prototype.postBool = function () {
         var _this = this;
@@ -115,6 +135,7 @@ var GamePage = (function () {
                 }
             }
             _this.scores = response;
+            _this.username = _this.cookieProvider.getCookie("username");
         });
     };
     GamePage.prototype.refreshCurrentScore = function () {
@@ -172,7 +193,7 @@ var GamePage = (function () {
         var bestScore = 5.79;
         var newScore = this.durationRAW;
         var a = Math.round(newScore - bestTime);
-        var c = parseFloat(this.inputForm.value.scoreDec);
+        var c = parseFloat(this.inputForm.value.score);
         c = Math.abs(c - bestScore);
         c *= timePunish;
         c = (parseFloat(newScore) + c);
@@ -189,6 +210,7 @@ var GamePage = (function () {
     //These Games need special values, hardcoded
     GamePage.prototype.checkForSpecialGame = function (gametype) {
         switch (gametype) {
+            case "coin":
             case "count1":
                 this.specialVar = 10;
                 this.time = this.timeFormat(this.specialVar * 60);
@@ -208,12 +230,15 @@ var GamePage = (function () {
             this.isCounting = true;
             this.canSend = false;
             var endtime = new Date();
+            var startTime = Date.now();
             endtime.setMinutes(endtime.getMinutes() + this.specialVar);
             this.interval = setInterval(function () {
                 var now = new Date().getTime();
                 var elapsedTime = endtime - now;
                 _this.durationRAW = (elapsedTime / 1000).toFixed(2);
                 _this.time = _this.timeFormat(_this.durationRAW);
+                var a = now - startTime;
+                _this.helpVar = (a / 1000);
                 if (elapsedTime < 0) {
                     clearInterval(_this.interval);
                     alert("Die Zeit ist um.");
@@ -238,7 +263,7 @@ var GamePage = (function () {
         else {
             //case: time, maybe change to switch
             if (this.game.gametype == 'decimal') {
-                ck = Number(this.inputForm.value.score).toFixed(2);
+                ck = Number(this.inputFormDec.value.score).toFixed(2);
                 //case brave, just check if done
             }
             else if (this.game.gametype == 'brave') {
@@ -285,7 +310,7 @@ __decorate([
 ], GamePage.prototype, "arrowNav", void 0);
 GamePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-game',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/'\n<ion-header>\n  	  <ion-navbar hideBackButton>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>{{game.name}}</ion-title>\n    <ion-buttons end>\n<button (click)="goHome()">\n<ion-icon name="home" style="display: inline-block;font-size:2.5em;"></ion-icon>\n</button>\n</ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n	<p [innerHTML]="game.instructions"></p> \n\n\n	<!-- Placeholder for special interactions, -Timer -->\n\n	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> \n		<ion-slide>\n\n			<div ngSwitch="{{game.gametype}}">\n					<div *ngSwitchDefault>\n					<form [formGroup]="inputForm">\n						    <ion-item>\n						            <ion-label floating>Dein Ergebniss</ion-label>\n						            <ion-input formControlName="score" type="text" disabled="true" value="{{time}}"></ion-input>\n						    </ion-item>\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n							\n							<button ion-button full color="primary" [disabled]="!isRepeatable" (click)="countDown()">{{timeTxt}}</button>		\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>	\n\n						    				 	\n						</form>\n					</div>\n\n					<div *ngSwitchCase="\'brave\'" [ngClass]="\'brave\'">\n						<button ion-button round [disabled]="!isRepeatable" (click)="postBool()">Challenge erfolgreich bestanden!</button>	\n					</div>\n\n					<div *ngSwitchCase="\'time\'" [ngClass]="\'time\'">\n\n						<form [formGroup]="inputForm">\n\n						    <ion-item>\n						            <ion-label floating>Dein Ergebniss</ion-label>\n						            <ion-input formControlName="score" type="text" disabled="true" value="{{time}}"></ion-input>\n						    </ion-item>\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>	\n					 	\n						</form>\n					</div>\n\n					<div *ngSwitchCase="\'decimal\'" [ngClass]="\'decimal\'">\n						<form [formGroup]="inputForm">\n						    <ion-item>\n						            <ion-label floating>Dein Ergebniss</ion-label>\n						            <ion-input formControlName="score" type="text"></ion-input>\n						    </ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore()">Absenden</button>						 	\n						</form>\n					</div>	\n					\n				<div *ngSwitchCase="\'value\'" [ngClass]="\'value\'">\n						<form [formGroup]="inputForm">\n						    <ion-item>\n						            <ion-label floating>Dein Ergebniss</ion-label>\n						            <ion-input formControlName="score" type="text"></ion-input>\n						    </ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore()">Absenden</button>						 	\n						</form>	\n				</div>	\n\n				<div *ngSwitchCase="\'coin\'" [ngClass]="\'coin\'">\n					<form [formGroup]="inputForm">\n					<ion-item>\n\n						<ion-label floating>Deine Zeite</ion-label>\n						<ion-input formControlName="score" type="text" disabled="true" value="{{time}}"></ion-input>\n\n					</ion-item>\n							\n					<ion-item>\n						<ion-label floating>Dein Ergebnis</ion-label>\n						<ion-input formControlName="scoreDec" type="number"></ion-input>\n					</ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postCoin()" [disabled]="!canSend">Absenden</button>	\n					 	\n					</form>\n				</div>	\n  			</div> \n		</ion-slide>\n\n\n\n		<ion-slide>\n\n			<ion-list>\n				<ion-item *ngFor="let score of scores">\n			      {{score.name}} {{score.pivot.value}}\n			    </ion-item>  \n		  	</ion-list>\n		  	<ion-buttons>\n				<button (click)="showTop5()">\n					<ion-icon name="refresh" style="display: inline-block;font-size:2.5em;"></ion-icon>\n				</button>\n			</ion-buttons>\n		</ion-slide> \n	</ion-slides> \n\n</ion-content>\n\n\n\n<ion-footer>\n  <ion-toolbar>\n    <ion-title>Dein aktuelles Ergebnis: {{cookie}}</ion-title>\n<div *ngIf="game.live == 1 ">\n\n    <div right ngSwitch="{{position}}">\n		<div *ngSwitchDefault [ngClass]="\'zero\'">\n		<ion-buttons end>\n        <button ion-button icon-right (click)="next()">Top10 <ion-icon name="arrow-forward"></ion-icon></button>\n      </ion-buttons>\n		</div>\n\n		<div *ngSwitchCase="\'1\'" [ngClass]="\'one\'">\n			    <ion-buttons end>\n        			<button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Zur&uuml;ck</button>\n      			</ion-buttons>\n		</div>		\n								\n  	</div> \n</div>\n\n\n  </ion-toolbar>\n</ion-footer>'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/,
+        selector: 'page-game',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/'\n<ion-header>\n  	  <ion-navbar hideBackButton>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>{{game.name}}</ion-title>\n    <ion-buttons end>\n<button (click)="goHome()">\n<ion-icon name="home" style="display: inline-block;font-size:2.5em;"></ion-icon>\n</button>\n</ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n	\n	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> \n		<ion-slide>\n			<p text-start [innerHTML]="game.instructions"></p> \n			<div ngSwitch="{{game.gametype}}">\n\n					<div *ngSwitchDefault>\n					<form [formGroup]="inputForm">\n						    <ion-item>\n						            <ion-label floating>Dein Ergebnis</ion-label>\n						            <ion-input formControlName="score" type="string" disabled="true" value="{{time}}"></ion-input>\n						    </ion-item>\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n							\n							<button ion-button full color="primary" [disabled]="!isRepeatable" (click)="countDown()">{{timeTxt}}</button>		\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>	\n\n						    				 	\n						</form>\n					</div>\n\n					<div *ngSwitchCase="\'brave\'" [ngClass]="\'brave\'">\n						\n						<button ion-button round [disabled]="!isRepeatable" (click)="postBool()">Challenge erfolgreich bestanden!</button>\n						\n					</div>\n\n					<div *ngSwitchCase="\'time\'" [ngClass]="\'time\'">\n\n						<form [formGroup]="inputForm">\n\n						    <ion-item>\n						            <ion-label floating>Dein Ergebnis</ion-label>\n						            <ion-input formControlName="score" type="string" disabled="true" value="{{time}}"></ion-input>\n						    </ion-item>\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>	\n					 	\n						</form>\n					</div>\n\n					<div *ngSwitchCase="\'decimal\'" [ngClass]="\'decimal\'">\n						<form [formGroup]="inputFormDec">\n						    <ion-item>\n						            <ion-label floating>Dein Ergebnis</ion-label>\n						            <ion-input formControlName="score" type="string"></ion-input>\n						    </ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore(\'dec\')">Absenden</button>						 	\n						</form>\n					</div>	\n					\n				<div *ngSwitchCase="\'value\'" [ngClass]="\'value\'">\n						<form [formGroup]="inputForm">\n						    <ion-item>\n						            <ion-label floating>Dein Ergebnis</ion-label>\n						            <ion-input formControlName="score" type="string"></ion-input>\n						    </ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore(\'val\')">Absenden</button>						 	\n						</form>	\n				</div>	\n\n				<div *ngSwitchCase="\'coin\'" [ngClass]="\'coin\'">\n					<form [formGroup]="inputFormDec">\n					<ion-item>\n\n						<ion-label fixed>Deine Zeit</ion-label>\n						<ion-input formControlName="score" type="string" disabled="true" value="{{time}}"></ion-input>\n\n					</ion-item>\n							\n					<ion-item>\n						<ion-label floating>Dein Ergebnis</ion-label>\n						<ion-input formControlName="helpscore" type="string"></ion-input>\n					</ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="countDown()">{{timeTxt}}</button>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postCoin()" [disabled]="!canSend">Absenden</button>	\n					 	\n					</form>\n				</div>	\n  			</div> \n		</ion-slide>\n\n\n\n		<ion-slide>\n\n			<ion-list>\n				<ion-item *ngFor="let score of scores; let i = index">\n				 <ion-icon *ngIf="username == score.name" name="arrow-forward"></ion-icon>\n			      {{i+1}}. {{score.name}} - {{score.pivot.value}}\n			    </ion-item>  \n		  	</ion-list>\n		  	<ion-buttons>\n				<button (click)="showTop5()">\n					<ion-icon name="refresh" style="display: inline-block;font-size:2.5em;"></ion-icon>\n				</button>\n			</ion-buttons>\n		</ion-slide> \n	</ion-slides> \n\n</ion-content>\n\n\n\n<ion-footer>\n  <ion-toolbar>\n    <ion-title>Dein aktuelles Ergebnis: {{cookie}}</ion-title>\n<div *ngIf="game.live == 1 ">\n\n    <div right ngSwitch="{{position}}">\n		<div *ngSwitchDefault [ngClass]="\'zero\'">\n		<ion-buttons end>\n        <button ion-button icon-right (click)="next()">Top10 <ion-icon name="arrow-forward"></ion-icon></button>\n      </ion-buttons>\n		</div>\n\n		<div *ngSwitchCase="\'1\'" [ngClass]="\'one\'">\n			    <ion-buttons end>\n        			<button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Zur&uuml;ck</button>\n      			</ion-buttons>\n		</div>		\n								\n  	</div> \n</div>\n\n\n  </ion-toolbar>\n</ion-footer>'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/,
     }),
     __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__providers_rest_rest__["a" /* RestProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__providers_rest_rest__["a" /* RestProvider */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_3__providers_cookie_cookie__["a" /* CookieProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__providers_cookie_cookie__["a" /* CookieProvider */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormBuilder */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormBuilder */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */]) === "function" && _f || Object])
 ], GamePage);
@@ -463,7 +488,7 @@ var HomePage = (function () {
 }());
 HomePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-home',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Let the Games begin</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Willkommen {{username}}</h3>\n<p [innerHTML]="menuPic"></p> \n<p [innerHTML]="menuTxt"></p> \n \n  <button ion-button secondary menuToggle>Toggle Menu</button>\n</ion-content>\n'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/
+        selector: 'page-home',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Let the Games begin</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content text-center padding>\n  <h3>Willkommen {{username}}</h3>\n\n<p [innerHTML]="menuPic"></p> \n<p [innerHTML]="menuTxt"></p> \n\n  <button ion-button secondary menuToggle>&Ouml;ffne Men&uuml;</button>\n</ion-content>\n'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */]])
 ], HomePage);
@@ -586,6 +611,7 @@ AppModule = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__pages_game_game__ = __webpack_require__(118);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__pages_login_login__ = __webpack_require__(119);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__providers_rest_rest__ = __webpack_require__(51);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__providers_cookie_cookie__ = __webpack_require__(95);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -603,20 +629,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 //Provider
 
+
 var MyApp = (function () {
-    function MyApp(platform, statusBar, splashScreen, restProvider) {
+    function MyApp(platform, statusBar, splashScreen, cookieProvider, restProvider) {
         var _this = this;
         this.platform = platform;
         this.statusBar = statusBar;
         this.splashScreen = splashScreen;
+        this.cookieProvider = cookieProvider;
         this.restProvider = restProvider;
         this.rootPage = __WEBPACK_IMPORTED_MODULE_5__pages_login_login__["a" /* LoginPage */]; // need to change to startsite
         this.initializeApp();
+        this.finished = [];
         this.restProvider.getGameData()
             .subscribe(function (response) {
             _this.pages = response;
             _this.pagesVar = response;
-            console.log(_this.pages);
+            _this.arrayRun();
         });
     }
     MyApp.prototype.initializeApp = function () {
@@ -628,13 +657,7 @@ var MyApp = (function () {
             _this.splashScreen.hide();
         });
     };
-    MyApp.prototype.openPage = function (page) {
-        // Reset the content nav to have just this page
-        // we wouldn't want the back button to show in this scenario
-        this.nav.setRoot(page.component);
-    };
     MyApp.prototype.openGamePage = function (event, game) {
-        console.log(game);
         this.nav.push(__WEBPACK_IMPORTED_MODULE_4__pages_game_game__["a" /* GamePage */], {
             game: game
         });
@@ -650,18 +673,34 @@ var MyApp = (function () {
             });
         }
     };
+    MyApp.prototype.arrayRun = function () {
+        for (var i = 0; i < this.pages.length; i++) {
+            var obj = this.pages[i];
+            if (this.cookieProvider.getCookie("gamescoreID" + obj.id) != 0) {
+                this.finished[i] = 1;
+            }
+            else {
+                this.finished[i] = 0;
+            }
+        }
+    };
+    MyApp.prototype.menuOpened = function () {
+        this.arrayRun();
+        this.pages = this.pagesVar;
+    };
     return MyApp;
 }());
 __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_14" /* ViewChild */])(__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Nav */]),
-    __metadata("design:type", __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Nav */])
+    __metadata("design:type", typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Nav */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Nav */]) === "function" && _a || Object)
 ], MyApp.prototype, "nav", void 0);
 MyApp = __decorate([
-    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/app/app.html"*/'<ion-menu [content]="content" persistent="true">\n  <ion-header>\n    <ion-toolbar>\n      <ion-title>Menu</ion-title>\n      <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>\n    </ion-toolbar>\n  </ion-header>\n\n  <ion-content>\n    <ion-list>\n      \n      <button menuClose ion-item *ngFor="let page of pages" (click)="openGamePage($event, page)">\n        {{page.game_nr}}. {{page.name}}\n      </button>\n    </ion-list>\n  </ion-content>\n\n</ion-menu>\n\n<!-- Disable swipe-to-go-back because it\'s poor UX to combine STGB with side menus -->\n<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>\n '/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/app/app.html"*/
+    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/app/app.html"*/'<ion-menu [content]="content" persistent="true" (ionOpen)="menuOpened()">\n  <ion-header>\n    <ion-toolbar>\n      <ion-title>Menu</ion-title>\n      <ion-searchbar (ionInput)="getItems($event)"></ion-searchbar>\n    </ion-toolbar>\n  </ion-header>\n\n  <ion-content>\n    <ion-list>\n      \n      <button menuClose ion-item *ngFor="let page of pages; let i = index" (click)="openGamePage($event, page)">\n        {{page.game_nr}}. {{page.name}} <ion-icon *ngIf="finished[i] == 1 " name="checkmark"></ion-icon>\n      </button>\n    </ion-list>\n  </ion-content>\n\n</ion-menu>\n\n<!-- Disable swipe-to-go-back because it\'s poor UX to combine STGB with side menus -->\n<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>\n '/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/app/app.html"*/
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* Platform */], __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__["a" /* StatusBar */], __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__["a" /* SplashScreen */], __WEBPACK_IMPORTED_MODULE_6__providers_rest_rest__["a" /* RestProvider */]])
+    __metadata("design:paramtypes", [typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* Platform */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* Platform */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__["a" /* StatusBar */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__["a" /* StatusBar */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__["a" /* SplashScreen */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__["a" /* SplashScreen */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_7__providers_cookie_cookie__["a" /* CookieProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_7__providers_cookie_cookie__["a" /* CookieProvider */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_6__providers_rest_rest__["a" /* RestProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6__providers_rest_rest__["a" /* RestProvider */]) === "function" && _f || Object])
 ], MyApp);
 
+var _a, _b, _c, _d, _e, _f;
 //# sourceMappingURL=app.component.js.map
 
 /***/ }),
@@ -782,11 +821,11 @@ var RestProvider = (function () {
         var urlVar;
         if (sort == 1) {
             urlVar = this.url + "/scoreR/" + game_id;
-            console.log('asc');
+            //console.log('asc');
         }
         else {
             urlVar = this.url + "/score/" + game_id;
-            console.log('desc');
+            //console.log('desc');
         }
         return this.http.get(urlVar)
             .map(this.extractData)
@@ -852,9 +891,10 @@ var RestProvider = (function () {
 }());
 RestProvider = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */], __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_6_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */]) === "function" && _b || Object])
 ], RestProvider);
 
+var _a, _b;
 //# sourceMappingURL=rest.js.map
 
 /***/ }),
@@ -889,7 +929,7 @@ var CookieProvider = (function () {
     function CookieProvider(http, alertCtrl) {
         this.http = http;
         this.alertCtrl = alertCtrl;
-        console.log('Hello CookieProvider Provider');
+        console.log('Load CookieProvider');
     }
     CookieProvider.prototype.setCookie = function (cname, cvalue, exdays) {
         var d = new Date();
@@ -934,9 +974,10 @@ var CookieProvider = (function () {
 }());
 CookieProvider = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["B" /* Injectable */])(),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */], __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* AlertController */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Http */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2_ionic_angular__["a" /* AlertController */]) === "function" && _b || Object])
 ], CookieProvider);
 
+var _a, _b;
 //# sourceMappingURL=cookie.js.map
 
 /***/ })

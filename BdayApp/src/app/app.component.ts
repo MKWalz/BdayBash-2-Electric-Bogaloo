@@ -10,27 +10,34 @@ import { LoginPage } from '../pages/login/login';
 
 //Provider
 import { RestProvider } from '../providers/rest/rest';
+import { CookieProvider } from'../providers/cookie/cookie';
 
 @Component({
   templateUrl: 'app.html'
 })
+
+
+
+
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
   rootPage: any = LoginPage; // need to change to startsite
 
   pages: any;
   pagesVar: any;
+  finished: Array<{id: string}>;
 
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, public restProvider: RestProvider) {
+  constructor(public platform: Platform, public statusBar: StatusBar,  public splashScreen: SplashScreen, private cookieProvider : CookieProvider, public restProvider: RestProvider) {
     this.initializeApp();
-
+    this.finished = [];
     this.restProvider.getGameData()
     .subscribe((response)=> {
          this.pages = response;
          this.pagesVar = response;
-         console.log(this.pages);
+         this.arrayRun();
      });
+    
 
   }
 
@@ -43,14 +50,9 @@ export class MyApp {
     });
   }
 
-  openPage(page) {
-    // Reset the content nav to have just this page
-    // we wouldn't want the back button to show in this scenario
-    this.nav.setRoot(page.component);
-  }
+ 
 
   openGamePage(event, game) {
-     console.log(game);  
      this.nav.push(GamePage, {
       game: game
     });
@@ -70,5 +72,22 @@ getItems(ev: any) {
       })
     }
   }
+
+arrayRun(){
+  for(var i = 0; i < this.pages.length; i++) {
+
+    var obj = this.pages[i];
+    if(this.cookieProvider.getCookie("gamescoreID"+obj.id) != 0){
+      this.finished[i] = 1;
+    }else {
+      this.finished[i] = 0;
+    }
+  }
+
+}
+menuOpened() {
+    this.arrayRun();
+    this.pages = this.pagesVar;
+}
   
 }

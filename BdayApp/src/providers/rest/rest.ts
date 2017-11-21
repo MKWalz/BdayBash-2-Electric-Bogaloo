@@ -42,11 +42,11 @@ export class RestProvider {
       var urlVar;
       if(sort == 1){
         urlVar = this.url+ "/scoreR/" +game_id;
-        console.log('asc');
+        //console.log('asc');
 
       } else {
         urlVar = this.url+ "/score/" +game_id;
-        console.log('desc');
+        //console.log('desc');
 
       }
       

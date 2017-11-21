@@ -10,7 +10,7 @@ import 'rxjs/add/operator/map';
 export class CookieProvider {
 
   constructor(public http: Http, private alertCtrl:AlertController) {
-    console.log('Hello CookieProvider Provider');
+    console.log('Load CookieProvider');
 
   }
 

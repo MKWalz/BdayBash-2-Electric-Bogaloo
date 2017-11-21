@@ -18,8 +18,10 @@ export class GamePage {
 
 	game:{'id','gametype', 'sort_direction', 'repeatable'};
 	inputForm: FormGroup;
+  inputFormDec: FormGroup;
   cookie: string ="";
   position:"";
+  username:"";
 
   //time variables
   time: int = 0;
@@ -34,6 +36,7 @@ export class GamePage {
 
   //harcode values, for special games
   specialVar:"";
+  helpVar:"";
 
 
   //top5
@@ -43,11 +46,18 @@ export class GamePage {
   	this.game = navParams.get('game');
   	//Form
   	this.inputForm = formBuilder.group({
-        score: ['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required])],
-        scoreDec: ['', Validators.compose([Validators.maxLength(10), Validators.required])],
+        score:['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required])],
         game_id : '',
         player_id : '',
     });
+
+    this.inputFormDec = formBuilder.group({
+        score:['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required])],
+        helpscore:'',
+        game_id : '',
+        player_id : '',
+    });
+    // ['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required])]
     this.refreshCurrentScore();
 
     if(this.cookie != ""){ //keep buttons disabled after changeing back to list
@@ -75,21 +85,37 @@ export class GamePage {
 }
 
 //from Game window
-postScore(){
-  let newScore = this.inputForm.value.score;
+postScore(type){
+  let newScore = 0;
+  if (type == "dec"){
+    newScore = this.inputFormDec.value.score;
 
-    if(!this.inputForm.valid){
+    if( !this.inputFormDec.valid){
         console.log("error!");
 
-    } else {
+    } else { 
+      this.sendScore(newScore);
+    }
 
-      //Send Data
-		  this.restProvider.postScore(
-			newScore,
-  		this.game.id,
+  } else {
+    newScore = this.inputForm.value.score;
+    if( !this.inputFormDec.valid){
+        console.log("error!");
+
+    } else { 
+      this.sendScore(newScore);
+    }
+
+  }
+}
+ sendScore(newScore){
+
+      this.restProvider.postScore(
+      newScore,
+      this.game.id,
       this.cookieProvider.getCookie("username"),
       this.game.sort_direction,
-			).subscribe((response)=> {
+      ).subscribe((response)=> {
 
       let a = response[0];
       this.afterPostActions(a);
@@ -99,12 +125,7 @@ postScore(){
         this.presentAlert();
       });
 
-
-
-   	}
-
-	}
-
+ }
 postBool(){
       //Send Data
       this.restProvider.postScore(
@@ -142,6 +163,7 @@ postBool(){
         }
 
       this.scores = response;
+      this.username = this.cookieProvider.getCookie("username");
       });
   }
 
@@ -227,7 +249,7 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
 
   var a = Math.round(newScore - bestTime);
 
-      var c = parseFloat(this.inputForm.value.scoreDec);
+      var c = parseFloat(this.inputForm.value.score);
       c =  Math.abs(c - bestScore); 
       c *= timePunish; 
       c = (parseFloat(newScore) + c); 
@@ -257,6 +279,7 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
 checkForSpecialGame(gametype){
 
     switch(gametype) {
+      case "coin":
       case "count1":
           this.specialVar = 10;
           this.time = this.timeFormat(this.specialVar * 60);
@@ -280,6 +303,7 @@ if(!this.isCounting){
   this.canSend = false;
 
   var endtime = new Date();
+  var startTime = Date.now();
   endtime.setMinutes(endtime.getMinutes() + this.specialVar);
 
   this.interval = setInterval(() => {
@@ -287,6 +311,9 @@ if(!this.isCounting){
   let elapsedTime =  endtime - now;
   this.durationRAW = (elapsedTime / 1000).toFixed(2);
   this.time = this.timeFormat(this.durationRAW);
+
+  let a = now - startTime;
+  this.helpVar = (a / 1000);
 
     if(elapsedTime < 0){
       clearInterval(this.interval);
@@ -302,12 +329,9 @@ if(!this.isCounting){
   this.isCounting = false;
   this.timeTxt = "Nochmal?";
   clearInterval(this.interval);
-
   }
 
 }
-
-
 
   goHome(){
     this.navCtrl.popToRoot();
@@ -323,7 +347,7 @@ if(!this.isCounting){
 
     //case: time, maybe change to switch
     if(this.game.gametype == 'decimal'){
-      ck = Number(this.inputForm.value.score).toFixed(2);
+      ck = Number(this.inputFormDec.value.score).toFixed(2);
     //case brave, just check if done
     } else if (this.game.gametype == 'brave'){
       ck = "Bestanden";
