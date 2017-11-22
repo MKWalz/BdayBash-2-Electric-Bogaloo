@@ -1,0 +1,12 @@
+body{
+	background-color: #F8F9FA;
+}
+
+.white{
+	background-color: white;
+}
+
+.datatable th,td{
+	padding:10px;
+}
+
