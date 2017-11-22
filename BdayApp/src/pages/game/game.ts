@@ -1,5 +1,5 @@
 import { Component,ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular'; 
+import { IonicPage, NavController, NavParams, AlertController, ToastController } from 'ionic-angular'; 
 //AlertController for the AlertBox
 
 import { RestProvider } from'../../providers/rest/rest';
@@ -37,12 +37,13 @@ export class GamePage {
   //harcode values, for special games
   specialVar:"";
   helpVar:"";
+  cookieVar:"";
 
 
   //top5
   scores:{};
   constructor(public navCtrl: NavController, public navParams: NavParams, private restProvider : RestProvider, private cookieProvider : CookieProvider, public formBuilder:FormBuilder,
-  	public alertCtrl: AlertController) {
+  	public alertCtrl: AlertController, private toastCtrl: ToastController) {
   	this.game = navParams.get('game');
   	//Form
   	this.inputForm = formBuilder.group({
@@ -52,7 +53,7 @@ export class GamePage {
     });
 
     this.inputFormDec = formBuilder.group({
-        score:['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required])],
+        score:['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*((\.|,)[0-9]{1,2})?'), Validators.required])],
         helpscore:'',
         game_id : '',
         player_id : '',
@@ -84,23 +85,42 @@ export class GamePage {
     alert.present();
 }
 
+presentToast(text) {
+  let toast = this.toastCtrl.create({
+    message: text,
+    duration: 3000,
+    position: 'top'
+  });
+
+  toast.present();
+}
+
 //from Game window
 postScore(type){
   let newScore = 0;
   if (type == "dec"){
     newScore = this.inputFormDec.value.score;
 
+
     if( !this.inputFormDec.valid){
         console.log("error!");
+        this.presentToast("Bitte ein Dezimal Fomat verwenden.");
 
-    } else { 
+    } else {
+
+        if (newScore.indexOf(',') > -1) {
+            newScore = parseFloat(newScore.replace(",", "."));
+            
+        } 
+      this.cookieVar = newScore;
       this.sendScore(newScore);
     }
 
   } else {
     newScore = this.inputForm.value.score;
-    if( !this.inputFormDec.valid){
+    if( !this.inputForm.valid){
         console.log("error!");
+        this.presentToast("Bitte nur Zahlen eingeben");
 
     } else { 
       this.sendScore(newScore);
@@ -128,6 +148,9 @@ postScore(type){
  }
 postBool(){
       //Send Data
+      console.log(this.game.id);
+      console.log(this.cookieProvider.getCookie("username"));
+      console.log(this.game.sort_direction);
       this.restProvider.postScore(
       1,
       this.game.id,
@@ -212,6 +235,8 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
 
   postTime(){
   let newScore = this.durationRAW;
+
+
   
       //Send Data
       this.restProvider.postScore(
@@ -241,19 +266,28 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
 
 
   postCoin(){
-  const bestTime = 3;
-  const timePunish = 3 * 100;
-  const bestScore = 5.79;
+    if( !this.inputFormDec.valid){
+        console.log("error!");
+        this.presentToast("Bitte ein Dezimal Fomat verwenden.");
 
-  var newScore = this.durationRAW;
+    } else {
 
-  var a = Math.round(newScore - bestTime);
+  const bestTime = 36;
+  const timePunish = 5 * 100;
+  const bestScore = 4.21;
 
-      var c = parseFloat(this.inputForm.value.score);
+      var newScore = this.durationRAW;
+
+      var c = this.inputFormDec.value.score;
+      if (c.indexOf(',') > -1) {
+            c = parseFloat(c.replace(",", "."));
+            
+      } 
+
       c =  Math.abs(c - bestScore); 
       c *= timePunish; 
       c = (parseFloat(newScore) + c); 
-      this.specialVar = c;
+      this.cookieVar = c;
 
       this.restProvider.postScore(
       c,
@@ -268,9 +302,9 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
       }, error => {
         console.log("Error Time");
         this.presentAlert();
-      }
-      );   
-
+      });   
+    
+    }
 
   }
 
@@ -280,6 +314,8 @@ checkForSpecialGame(gametype){
 
     switch(gametype) {
       case "coin":
+          this.time = this.timeFormat(0);
+          break;
       case "count1":
           this.specialVar = 10;
           this.time = this.timeFormat(this.specialVar * 60);
@@ -309,11 +345,11 @@ if(!this.isCounting){
   this.interval = setInterval(() => {
   var now = new Date().getTime();
   let elapsedTime =  endtime - now;
-  this.durationRAW = (elapsedTime / 1000).toFixed(2);
-  this.time = this.timeFormat(this.durationRAW);
+  this.helpVar = (elapsedTime / 1000).toFixed(2);
+  this.time = this.timeFormat(this.helpVar);
 
   let a = now - startTime;
-  this.helpVar = (a / 1000);
+  this.durationRAW = (a / 1000);
 
     if(elapsedTime < 0){
       clearInterval(this.interval);
@@ -347,7 +383,8 @@ if(!this.isCounting){
 
     //case: time, maybe change to switch
     if(this.game.gametype == 'decimal'){
-      ck = Number(this.inputFormDec.value.score).toFixed(2);
+      console.log(this.cookieVar);
+      ck = Number(this.cookieVar).toFixed(2);
     //case brave, just check if done
     } else if (this.game.gametype == 'brave'){
       ck = "Bestanden";
@@ -356,10 +393,10 @@ if(!this.isCounting){
       ck = Math.trunc(this.inputForm.value.score);
     //case: decimal
     } else if (this.game.gametype == 'coin'){
-      ck = this.timeFormat(this.specialVar);
+      ck = this.timeFormat(this.cookieVar);
     //case: decimal
     }  else {
-      ck = this.time;
+      ck = this.timeFormat(this.durationRAW);
     }
 
 

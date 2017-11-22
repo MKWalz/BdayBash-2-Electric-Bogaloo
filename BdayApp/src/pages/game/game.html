@@ -65,7 +65,7 @@
 						<form [formGroup]="inputFormDec">
 						    <ion-item>
 						            <ion-label floating>Dein Ergebnis</ion-label>
-						            <ion-input formControlName="score" type="string"></ion-input>
+						            <ion-input formControlName="score" type="string" [disabled]="!isRepeatable"></ion-input>
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
@@ -90,18 +90,18 @@
 					<ion-item>
 
 						<ion-label fixed>Deine Zeit</ion-label>
-						<ion-input formControlName="score" type="string" disabled="true" value="{{time}}"></ion-input>
+						<ion-input formControlName="helpscore" type="string" disabled="true" value="{{time}}"></ion-input>
 
 					</ion-item>
 							
 					<ion-item>
 						<ion-label floating>Dein Ergebnis</ion-label>
-						<ion-input formControlName="helpscore" type="string"></ion-input>
+						<ion-input formControlName="score" type="string"></ion-input>
 					</ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
 
-						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="countDown()">{{timeTxt}}</button>
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>
 
 						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postCoin()" [disabled]="!canSend">Absenden</button>	
 					 	
@@ -116,7 +116,7 @@
 
 			<ion-list>
 				<ion-item *ngFor="let score of scores; let i = index">
-				 <ion-icon *ngIf="username == score.name" name="arrow-forward"></ion-icon>
+				 <ion-icon *ngIf="username == score.name" name="contact"></ion-icon>
 			      {{i+1}}. {{score.name}} - {{score.pivot.value}}
 			    </ion-item>  
 		  	</ion-list>
