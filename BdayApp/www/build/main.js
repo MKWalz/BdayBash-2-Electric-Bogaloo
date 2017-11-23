@@ -148,7 +148,7 @@ var GamePage = (function () {
                     response[i].pivot.value = _this.timeFormat(response[i].pivot.value);
                 }
             }
-            if (a == "value") {
+            if (a == "value" || a == "count1" || a == "count2") {
                 for (var i = 0; i < response.length; i++) {
                     response[i].pivot.value = Math.trunc(response[i].pivot.value);
                 }

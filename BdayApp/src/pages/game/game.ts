@@ -179,7 +179,7 @@ postBool(){
           }
         }
 
-        if(a == "value"){ // Point without Decimal
+        if(a == "value" || a == "count1" || a == "count2" ){ // Point without Decimal
           for(var i = 0; i < response.length; i++) {
           response[i].pivot.value =Math.trunc(response[i].pivot.value);
 
