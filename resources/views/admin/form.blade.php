@@ -28,8 +28,9 @@
     'value'=> 'Punkte',
     'decimal'=>'Dezimal',
     'coin'=>'M&uuml;nzspiel',
-    'count1'=>'Countdown Spiel 1',
-    'count2'=>'Countdown Spiel 2',
+    'minute'=>'Minutenspiel',
+    'count1'=>'Countdown 2min',
+    'count2'=>'Countdown 3min',
 ))}}<br/>
 
 {{Form::label('category', 'Spielarten')}}

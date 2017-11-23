@@ -26,16 +26,23 @@
 					<div *ngSwitchDefault>
 					<form [formGroup]="inputForm">
 						    <ion-item>
-						            <ion-label floating>Dein Ergebnis</ion-label>
-						            <ion-input formControlName="score" type="string" disabled="true" value="{{time}}"></ion-input>
+						            <ion-label floating>Deine Restzeit</ion-label>
+						            <ion-input formControlName="helpscore" type="string" disabled="true" value="{{time}}"></ion-input>
 						    </ion-item>
+
+						    <ion-item>
+								<ion-label floating>Dein Ergebnis</ion-label>
+								<ion-input formControlName="score" type="string"></ion-input>
+							</ion-item>
+
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
 							
 							<button ion-button full color="primary" [disabled]="!isRepeatable" (click)="countDown()">{{timeTxt}}</button>		
-						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>	
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore('val')" [disabled]="!canSend">Absenden</button>	
 
 						    				 	
-						</form>
+					</form>
+
 					</div>
 
 					<div *ngSwitchCase="'brave'" [ngClass]="'brave'">
@@ -106,7 +113,22 @@
 						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postCoin()" [disabled]="!canSend">Absenden</button>	
 					 	
 					</form>
-				</div>	
+				</div>
+
+
+
+				<div *ngSwitchCase="'minute'" [ngClass]="'minute'">
+					<form [formGroup]="inputFormDec">
+
+						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
+
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>
+
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>	
+					 	
+					</form>
+				</div>
+
   			</div> 
 		</ion-slide>
 

@@ -48,6 +48,7 @@ export class GamePage {
   	//Form
   	this.inputForm = formBuilder.group({
         score:['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required])],
+        helpscore:'',
         game_id : '',
         player_id : '',
     });
@@ -172,7 +173,7 @@ postBool(){
   showTop5(){
       this.restProvider.showTop5(this.game.id, this.game.sort_direction).subscribe((response)=> {
         let a = this.game.gametype;
-        if(a == "time" || a == "count1" || a == "count2" || a == "coin"){ // Convert Data in Time Format
+        if(a == "time" || a == "coin" || a == "decimal"){ // Convert Data in Time Format
           for(var i = 0; i < response.length; i++) {
           response[i].pivot.value = this.timeFormat(response[i].pivot.value);
           }
@@ -184,6 +185,14 @@ postBool(){
 
           }
         }
+
+        if(a == "minute"){ // Convert Data in Time Format
+          for(var i = 0; i < response.length; i++) {
+            let b = response[i].pivot.value;
+          response[i].pivot.value = Number(b).toFixed(1);
+          }
+        }
+
 
       this.scores = response;
       this.username = this.cookieProvider.getCookie("username");
@@ -234,9 +243,13 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
 }
 
   postTime(){
-  let newScore = this.durationRAW;
+  let newScore = parseFloat(this.durationRAW);
 
+  if(this.game.gametype == "minute"){
+    newScore = Math.abs(newScore - this.specialVar).toFixed(1);
+    this.cookieVar = newScore ;
 
+  }
   
       //Send Data
       this.restProvider.postScore(
@@ -254,6 +267,7 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
         this.presentAlert();
       }
       );
+      
     }
 
   afterPostActions(a){
@@ -317,13 +331,17 @@ checkForSpecialGame(gametype){
           this.time = this.timeFormat(0);
           break;
       case "count1":
-          this.specialVar = 10;
+          this.specialVar = 2;
           this.time = this.timeFormat(this.specialVar * 60);
           break;
       case "count2":
-          this.specialVar = 5;
+          this.specialVar = 3;
           this.time = this.timeFormat(this.specialVar * 60);
           break;
+      case "minute":
+          this.specialVar = 60;
+
+          break;          
       default:
           break;
     }
@@ -383,8 +401,8 @@ if(!this.isCounting){
 
     //case: time, maybe change to switch
     if(this.game.gametype == 'decimal'){
-      console.log(this.cookieVar);
-      ck = Number(this.cookieVar).toFixed(2);
+    ck = this.timeFormat(this.cookieVar); 
+    //ck = Number(this.cookieVar).toFixed(2);
     //case brave, just check if done
     } else if (this.game.gametype == 'brave'){
       ck = "Bestanden";
@@ -395,7 +413,10 @@ if(!this.isCounting){
     } else if (this.game.gametype == 'coin'){
       ck = this.timeFormat(this.cookieVar);
     //case: decimal
-    }  else {
+    }  else if (this.game.gametype == 'minute'){
+      ck = this.cookieVar;
+    //case: decimal
+    } else {
       ck = this.timeFormat(this.durationRAW);
     }
 
