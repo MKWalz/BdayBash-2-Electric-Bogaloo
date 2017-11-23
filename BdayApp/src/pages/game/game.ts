@@ -407,7 +407,7 @@ if(!this.isCounting){
     } else if (this.game.gametype == 'brave'){
       ck = "Bestanden";
     //case value: no decimal
-    } else if (this.game.gametype == 'value'){
+    } else if (this.game.gametype == 'value' || this.game.gametype == 'count1' || this.game.gametype == 'count2'){
       ck = Math.trunc(this.inputForm.value.score);
     //case: decimal
     } else if (this.game.gametype == 'coin'){
