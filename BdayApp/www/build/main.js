@@ -143,7 +143,7 @@ var GamePage = (function () {
         var _this = this;
         this.restProvider.showTop5(this.game.id, this.game.sort_direction).subscribe(function (response) {
             var a = _this.game.gametype;
-            if (a == "time" || a == "coin" || a == "decimal") {
+            if (a == "time" || a == "coin") {
                 for (var i = 0; i < response.length; i++) {
                     response[i].pivot.value = _this.timeFormat(response[i].pivot.value);
                 }
@@ -305,8 +305,8 @@ var GamePage = (function () {
         else {
             //case: time, maybe change to switch
             if (this.game.gametype == 'decimal') {
-                ck = this.timeFormat(this.cookieVar);
-                //ck = Number(this.cookieVar).toFixed(2);
+                //ck = this.timeFormat(this.cookieVar); 
+                ck = Number(this.cookieVar).toFixed(2);
                 //case brave, just check if done
             }
             else if (this.game.gametype == 'brave') {

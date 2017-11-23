@@ -173,7 +173,7 @@ postBool(){
   showTop5(){
       this.restProvider.showTop5(this.game.id, this.game.sort_direction).subscribe((response)=> {
         let a = this.game.gametype;
-        if(a == "time" || a == "coin" || a == "decimal"){ // Convert Data in Time Format
+        if(a == "time" || a == "coin"){ // Convert Data in Time Format
           for(var i = 0; i < response.length; i++) {
           response[i].pivot.value = this.timeFormat(response[i].pivot.value);
           }
@@ -401,8 +401,8 @@ if(!this.isCounting){
 
     //case: time, maybe change to switch
     if(this.game.gametype == 'decimal'){
-    ck = this.timeFormat(this.cookieVar); 
-    //ck = Number(this.cookieVar).toFixed(2);
+    //ck = this.timeFormat(this.cookieVar); 
+    ck = Number(this.cookieVar).toFixed(2);
     //case brave, just check if done
     } else if (this.game.gametype == 'brave'){
       ck = "Bestanden";
