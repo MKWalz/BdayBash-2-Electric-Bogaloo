@@ -216,7 +216,7 @@ postBool(){
 
 if(!this.isCounting && this.timeTxt != "Nochmal?"){
  this.stopwatch();
-}else if(this.timeTxt == "Nochmal?" && !this.isCounting){
+}else if(this.timeTxt == "Nochmal?" && !this.isCounting && this,){
     let alert = this.alertCtrl.create({
     title: 'Wirklich neu starten?',
     message: 'Dies &uuml;berschreibt deine jetzige Zeit?',
