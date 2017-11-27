@@ -7,7 +7,7 @@
     <ion-title>{{game.name}}</ion-title>
     <ion-buttons end>
 <button (click)="goHome()">
-<ion-icon name="home" style="display: inline-block;font-size:2.5em;"></ion-icon>
+<ion-icon name="home" [ngClass]="'bigbutton'"></ion-icon>
 </button>
 </ion-buttons>
   </ion-navbar>
@@ -144,7 +144,7 @@
 		  	</ion-list>
 		  	<ion-buttons>
 				<button (click)="showTop5()">
-					<ion-icon name="refresh"></ion-icon>
+					<ion-icon [ngClass]="'bigbutton'" name="refresh"></ion-icon>
 				</button>
 			</ion-buttons>
 		</ion-slide> 
