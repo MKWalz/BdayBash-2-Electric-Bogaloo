@@ -64,6 +64,7 @@ var GamePage = (function () {
             this.checkRepeatable();
         }
         this.checkForSpecialGame(this.game.gametype);
+        this.audio = new Audio('assets/audio/sound2.mp3');
     }
     GamePage.prototype.ionViewDidLoad = function () {
         console.log('ionViewDidLoad GamePage');
@@ -169,17 +170,30 @@ var GamePage = (function () {
     //Time-Operation
     GamePage.prototype.startTimer = function () {
         var _this = this;
-        if (!this.isCounting) {
-            this.timeTxt = "Stopp";
-            this.isCounting = true;
-            this.canSend = false;
-            var startTime = Date.now();
-            this.interval = setInterval(function () {
-                var elapsedTime = Date.now() - startTime;
-                _this.durationRAW = (elapsedTime / 1000)
-                    .toFixed(2);
-                _this.time = _this.timeFormat(_this.durationRAW);
-            }, 100);
+        if (!this.isCounting && this.timeTxt != "Nochmal?") {
+            this.stopwatch();
+        }
+        else if (this.timeTxt == "Nochmal?" && !this.isCounting) {
+            var alert = this.alertCtrl.create({
+                title: 'Wirklich neu starten?',
+                message: 'Dies &uuml;berschreibt deine jetzige Zeit?',
+                buttons: [
+                    {
+                        text: 'Wiederholen',
+                        handler: function () {
+                            _this.stopwatch();
+                        }
+                    },
+                    {
+                        text: 'Abbrechen',
+                        role: 'cancel',
+                        handler: function () {
+                            console.log('Cancel clicked');
+                        }
+                    }
+                ]
+            });
+            alert.present();
         }
         else {
             this.canSend = true;
@@ -187,6 +201,19 @@ var GamePage = (function () {
             this.timeTxt = "Nochmal?";
             clearInterval(this.interval);
         }
+    };
+    GamePage.prototype.stopwatch = function () {
+        var _this = this;
+        this.timeTxt = "Stopp";
+        this.isCounting = true;
+        this.canSend = false;
+        var startTime = Date.now();
+        this.interval = setInterval(function () {
+            var elapsedTime = Date.now() - startTime;
+            _this.durationRAW = (elapsedTime / 1000)
+                .toFixed(2);
+            _this.time = _this.timeFormat(_this.durationRAW);
+        }, 100);
     };
     GamePage.prototype.timeFormat = function (decimalTimeString) {
         var n = new Date(0, 0);
@@ -282,17 +309,22 @@ var GamePage = (function () {
                 var a = now - startTime;
                 _this.durationRAW = (a / 1000);
                 if (elapsedTime < 0) {
-                    clearInterval(_this.interval);
-                    alert("Die Zeit ist um.");
+                    _this.afterCountdownActions();
+                    _this.time = _this.timeFormat(0);
+                    _this.presentToast("Die Zeit ist um");
+                    _this.audio.play();
                 }
             }, 100);
         }
         else {
-            this.canSend = true;
-            this.isCounting = false;
-            this.timeTxt = "Nochmal?";
-            clearInterval(this.interval);
+            this.afterCountdownActions();
         }
+    };
+    GamePage.prototype.afterCountdownActions = function () {
+        this.canSend = true;
+        this.isCounting = false;
+        this.timeTxt = "Nochmal?";
+        clearInterval(this.interval);
     };
     GamePage.prototype.goHome = function () {
         this.navCtrl.popToRoot();

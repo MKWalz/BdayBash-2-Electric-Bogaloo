@@ -38,6 +38,8 @@ export class GamePage {
   specialVar:"";
   helpVar:"";
   cookieVar:"";
+  //fuer countdown-sound
+  audio:"";
 
 
   //top5
@@ -66,6 +68,8 @@ export class GamePage {
       this.checkRepeatable(); 
     }
     this.checkForSpecialGame(this.game.gametype);
+    this.audio = new Audio('assets/audio/sound2.mp3');
+    
   }
 
   ionViewDidLoad() { // Disables Swipe if there is no live Ranking
@@ -210,7 +214,42 @@ postBool(){
 
  startTimer() {
 
-  if(!this.isCounting){
+if(!this.isCounting && this.timeTxt != "Nochmal?"){
+ this.stopwatch();
+}else if(this.timeTxt == "Nochmal?" && !this.isCounting){
+    let alert = this.alertCtrl.create({
+    title: 'Wirklich neu starten?',
+    message: 'Dies &uuml;berschreibt deine jetzige Zeit?',
+    buttons: [
+
+      {
+        text: 'Wiederholen',
+        handler: () => {
+          this.stopwatch();
+        }
+      },
+      {
+        text: 'Abbrechen',
+        role: 'cancel',
+        handler: () => {
+          console.log('Cancel clicked');
+        }
+      }
+    ]
+  });
+  alert.present();     
+
+
+} else {
+  this.canSend = true;
+  this.isCounting = false;
+  this.timeTxt = "Nochmal?";
+  clearInterval(this.interval);
+
+  }
+    
+}
+  stopwatch(){
 
     this.timeTxt = "Stopp";
     this.isCounting = true;
@@ -224,17 +263,8 @@ postBool(){
     this.time = this.timeFormat(this.durationRAW);
 
     }, 100);
-
-  } else {
-  this.canSend = true;
-  this.isCounting = false;
-  this.timeTxt = "Nochmal?";
-  clearInterval(this.interval);
-
-  }
-
     
-}
+  }
 
 timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = sec, and third = milisec 
   var n = new Date(0,0);
@@ -313,6 +343,7 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
       let a = response[0];
       this.afterPostActions(a);
       
+      
       }, error => {
         console.log("Error Time");
         this.presentAlert();
@@ -370,8 +401,10 @@ if(!this.isCounting){
   this.durationRAW = (a / 1000);
 
     if(elapsedTime < 0){
-      clearInterval(this.interval);
-      alert("Die Zeit ist um.");
+      this.afterCountdownActions();
+      this.time = this.timeFormat(0);  
+      this.presentToast("Die Zeit ist um");
+      this.audio.play();
     }
 
     }, 100);
@@ -379,13 +412,17 @@ if(!this.isCounting){
 
 
   } else {
+  this.afterCountdownActions();
+
+  }
+
+}
+  afterCountdownActions(){
   this.canSend = true;
   this.isCounting = false;
   this.timeTxt = "Nochmal?";
   clearInterval(this.interval);
   }
-
-}
 
   goHome(){
     this.navCtrl.popToRoot();
