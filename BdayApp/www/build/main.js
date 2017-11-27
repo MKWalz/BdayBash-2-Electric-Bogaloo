@@ -174,7 +174,7 @@ var GamePage = (function () {
             this.stopwatch();
         }
         else if (this.timeTxt == "Nochmal?" && !this.isCounting) {
-            var alert_1 = this.alertCtrl.create({
+            var alert = this.alertCtrl.create({
                 title: 'Wirklich neu starten?',
                 message: 'Dies &uuml;berschreibt deine jetzige Zeit?',
                 buttons: [
@@ -193,7 +193,7 @@ var GamePage = (function () {
                     }
                 ]
             });
-            alert_1.present();
+            alert.present();
         }
         else {
             this.canSend = true;
@@ -249,7 +249,7 @@ var GamePage = (function () {
             this.presentToast("Bitte ein Dezimal Fomat verwenden.");
         }
         else {
-            var bestTime = 36;
+            var bestTime = 30;
             var timePunish = 5 * 100;
             var bestScore = 4.21;
             var newScore = this.durationRAW;
@@ -259,7 +259,10 @@ var GamePage = (function () {
             }
             c = Math.abs(c - bestScore);
             c *= timePunish;
-            c = (parseFloat(newScore) + c);
+            c = (parseFloat(newScore) + c) - bestTime;
+            if (c < 0) {
+                c = 0;
+            }
             this.cookieVar = c;
             this.restProvider.postScore(c, this.game.id, this.cookieProvider.getCookie("username"), this.game.sort_direction).subscribe(function (response) {
                 var a = response[0];
@@ -391,10 +394,10 @@ GamePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
         selector: 'page-game',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/'\n<ion-header>\n  	  <ion-navbar hideBackButton>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>{{game.name}}</ion-title>\n    <ion-buttons end>\n<button (click)="goHome()">\n<ion-icon name="home" [ngClass]="\'bigbutton\'"></ion-icon>\n</button>\n</ion-buttons>\n  </ion-navbar>\n\n</ion-header>\n\n\n<ion-content padding>\n\n	\n	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> \n		<ion-slide>\n			<p text-start [innerHTML]="game.instructions"></p> \n			<div ngSwitch="{{game.gametype}}">\n\n					<div *ngSwitchDefault>\n					<form [formGroup]="inputForm">\n						    <ion-item>\n						            <ion-label floating>Deine Restzeit</ion-label>\n						            <ion-input formControlName="helpscore" type="string" disabled="true" value="{{time}}"></ion-input>\n						    </ion-item>\n\n						    <ion-item>\n								<ion-label floating>Dein Ergebnis</ion-label>\n								<ion-input formControlName="score" type="string"></ion-input>\n							</ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n							\n							<button ion-button full color="primary" [disabled]="!isRepeatable" (click)="countDown()">{{timeTxt}}</button>		\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore(\'val\')" [disabled]="!canSend">Absenden</button>	\n\n						    				 	\n					</form>\n\n					</div>\n\n					<div *ngSwitchCase="\'brave\'" [ngClass]="\'brave\'">\n						\n						<button ion-button round [disabled]="!isRepeatable" (click)="postBool()">Challenge erfolgreich bestanden!</button>\n						\n					</div>\n\n					<div *ngSwitchCase="\'time\'" [ngClass]="\'time\'">\n\n						<form [formGroup]="inputForm">\n\n						    <ion-item>\n						            <ion-label floating>Dein Ergebnis</ion-label>\n						            <ion-input formControlName="score" type="string" disabled="true" value="{{time}}"></ion-input>\n						    </ion-item>\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>	\n					 	\n						</form>\n					</div>\n\n					<div *ngSwitchCase="\'decimal\'" [ngClass]="\'decimal\'">\n						<form [formGroup]="inputFormDec">\n						    <ion-item>\n						            <ion-label floating>Dein Ergebnis</ion-label>\n						            <ion-input formControlName="score" type="string" [disabled]="!isRepeatable"></ion-input>\n						    </ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore(\'dec\')">Absenden</button>						 	\n						</form>\n					</div>	\n					\n				<div *ngSwitchCase="\'value\'" [ngClass]="\'value\'">\n						<form [formGroup]="inputForm">\n						    <ion-item>\n						            <ion-label floating>Dein Ergebnis</ion-label>\n						            <ion-input formControlName="score" type="string"></ion-input>\n						    </ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore(\'val\')">Absenden</button>						 	\n						</form>	\n				</div>	\n\n				<div *ngSwitchCase="\'coin\'" [ngClass]="\'coin\'">\n					<form [formGroup]="inputFormDec">\n					<ion-item>\n\n						<ion-label fixed>Deine Zeit</ion-label>\n						<ion-input formControlName="helpscore" type="string" disabled="true" value="{{time}}"></ion-input>\n\n					</ion-item>\n							\n					<ion-item>\n						<ion-label floating>Dein Ergebnis</ion-label>\n						<ion-input formControlName="score" type="string"></ion-input>\n					</ion-item>\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postCoin()" [disabled]="!canSend">Absenden</button>	\n					 	\n					</form>\n				</div>\n\n\n\n				<div *ngSwitchCase="\'minute\'" [ngClass]="\'minute\'">\n					<form [formGroup]="inputFormDec">\n\n						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>\n\n						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postTime()" [disabled]="!canSend">Absenden</button>	\n					 	\n					</form>\n				</div>\n\n  			</div> \n		</ion-slide>\n\n\n\n		<ion-slide>\n\n			<ion-list>\n				<ion-item *ngFor="let score of scores; let i = index">\n				 <ion-icon *ngIf="username == score.name" name="contact"></ion-icon>\n			      {{i+1}}. {{score.name}} - {{score.pivot.value}}\n			    </ion-item>  \n		  	</ion-list>\n		  	<ion-buttons>\n				<button (click)="showTop5()">\n					<ion-icon [ngClass]="\'bigbutton\'" name="refresh"></ion-icon>\n				</button>\n			</ion-buttons>\n		</ion-slide> \n	</ion-slides> \n\n</ion-content>\n\n\n\n<ion-footer>\n  <ion-toolbar>\n    <ion-title>Dein aktuelles Ergebnis: {{cookie}}</ion-title>\n<div *ngIf="game.live == 1 ">\n\n    <div right ngSwitch="{{position}}">\n		<div *ngSwitchDefault [ngClass]="\'zero\'">\n		<ion-buttons end>\n        <button ion-button icon-right (click)="next()">Top10 <ion-icon name="arrow-forward"></ion-icon></button>\n      </ion-buttons>\n		</div>\n\n		<div *ngSwitchCase="\'1\'" [ngClass]="\'one\'">\n			    <ion-buttons end>\n        			<button ion-button icon-left (click)="prev()"><ion-icon name="arrow-back"></ion-icon> Zur&uuml;ck</button>\n      			</ion-buttons>\n		</div>		\n								\n  	</div> \n</div>\n\n\n  </ion-toolbar>\n</ion-footer>'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/game/game.html"*/,
     }),
-    __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__providers_rest_rest__["a" /* RestProvider */], __WEBPACK_IMPORTED_MODULE_3__providers_cookie_cookie__["a" /* CookieProvider */], __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormBuilder */],
-        __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* ToastController */]])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* NavController */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* NavParams */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__providers_rest_rest__["a" /* RestProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__providers_rest_rest__["a" /* RestProvider */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_3__providers_cookie_cookie__["a" /* CookieProvider */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__providers_cookie_cookie__["a" /* CookieProvider */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormBuilder */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_4__angular_forms__["a" /* FormBuilder */]) === "function" && _e || Object, typeof (_f = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["a" /* AlertController */]) === "function" && _f || Object, typeof (_g = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* ToastController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* ToastController */]) === "function" && _g || Object])
 ], GamePage);
 
+var _a, _b, _c, _d, _e, _f, _g;
 //# sourceMappingURL=game.js.map
 
 /***/ }),

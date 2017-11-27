@@ -216,7 +216,7 @@ postBool(){
 
 if(!this.isCounting && this.timeTxt != "Nochmal?"){
  this.stopwatch();
-}else if(this.timeTxt == "Nochmal?" && !this.isCounting && this,){
+}else if(this.timeTxt == "Nochmal?" && !this.isCounting){
     let alert = this.alertCtrl.create({
     title: 'Wirklich neu starten?',
     message: 'Dies &uuml;berschreibt deine jetzige Zeit?',
@@ -316,7 +316,7 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
 
     } else {
 
-  const bestTime = 36;
+  const bestTime = 30;
   const timePunish = 5 * 100;
   const bestScore = 4.21;
 
@@ -330,7 +330,10 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
 
       c =  Math.abs(c - bestScore); 
       c *= timePunish; 
-      c = (parseFloat(newScore) + c); 
+      c = (parseFloat(newScore) + c)-bestTime; 
+      if(c < 0){
+        c = 0;
+      }
       this.cookieVar = c;
 
       this.restProvider.postScore(
