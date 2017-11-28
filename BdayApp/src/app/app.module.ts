@@ -29,9 +29,9 @@ import { GLIonic2EnvConfigurationModule } from 'gl-ionic2-env-configuration';
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp, {
-            //scrollPadding: false,
-            //scrollAssist: true,
-            //autoFocusAssist: false
+            scrollPadding: false,
+            scrollAssist: true,
+            autoFocusAssist: false
           }),
     HttpModule,
     GLIonic2EnvConfigurationModule // Import the module here
