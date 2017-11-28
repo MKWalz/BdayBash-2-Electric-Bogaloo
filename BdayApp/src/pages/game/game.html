@@ -17,7 +17,7 @@
 
 <ion-content  padding>
 	
-	<ion-slides style="height: auto" #arrowNav (ionSlideDidChange)="slideChanged()"> 
+	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> 
 		<ion-slide>
 			<p text-start [innerHTML]="game.instructions"></p> 
 			<div ngSwitch="{{game.gametype}}">
