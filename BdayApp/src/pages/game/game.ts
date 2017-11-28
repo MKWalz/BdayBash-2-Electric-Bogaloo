@@ -49,19 +49,18 @@ export class GamePage {
   	this.game = navParams.get('game');
   	//Form
   	this.inputForm = formBuilder.group({
-        score:['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required])],
+        score:['', Validators.compose([Validators.maxLength(8), Validators.pattern('[0-9]*'), Validators.required])],
         helpscore:'',
         game_id : '',
         player_id : '',
     });
 
     this.inputFormDec = formBuilder.group({
-        score:['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*((\.|,)[0-9]{1,2})?'), Validators.required])],
+        score:['', Validators.compose([Validators.maxLength(8), Validators.pattern('[0-9]*((\\.|,)[0-9]{1,2})?'), Validators.required])],
         helpscore:'',
         game_id : '',
         player_id : '',
     });
-    // ['', Validators.compose([Validators.maxLength(10), Validators.pattern('[0-9]*'), Validators.required])]
     this.refreshCurrentScore();
 
     if(this.cookie != ""){ //keep buttons disabled after changeing back to list

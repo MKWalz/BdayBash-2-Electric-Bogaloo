@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform, IonicApp, App, MenuController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 //Pages
@@ -28,7 +28,8 @@ export class MyApp {
   finished: Array<{id: string}>;
 
 
-  constructor(public platform: Platform, public statusBar: StatusBar,  public splashScreen: SplashScreen, private cookieProvider : CookieProvider, public restProvider: RestProvider) {
+  constructor(public platform: Platform, public statusBar: StatusBar,  public splashScreen: SplashScreen, private cookieProvider : CookieProvider, public restProvider: RestProvider,
+    private _app: App, private _ionicApp: IonicApp, private _menu: MenuController) {
     this.initializeApp();
     this.finished = [];
     this.restProvider.getGameData()
@@ -47,9 +48,51 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      this.setupBackButtonBehavior();
+
     });
   }
 
+
+
+private setupBackButtonBehavior() {
+
+    // If on web version (browser)
+    if (window.location.protocol !== "file:") {
+
+      // Register browser back button action(s)
+      window.onpopstate = (evt) => {
+
+        // Close menu if open
+        if (this._menu.isOpen()) {
+          this._menu.close ();
+          return;
+        }
+
+        // Close any active modals or overlays
+        let activePortal = this._ionicApp._loadingPortal.getActive() ||
+          this._ionicApp._modalPortal.getActive() ||
+          this._ionicApp._toastPortal.getActive() ||
+          this._ionicApp._overlayPortal.getActive();
+
+        if (activePortal) {
+          activePortal.dismiss();
+          return;
+        }
+
+        // Navigate back
+        if (this._app.getRootNav().canGoBack()) this._app.getRootNav().pop();
+
+      };
+
+      // Fake browser history on each view enter
+      this._app.viewDidEnter.subscribe((app) => {
+        history.pushState (null, null, "");
+      });
+
+    }
+    
+  }
  
 
   openGamePage(event, game) {
