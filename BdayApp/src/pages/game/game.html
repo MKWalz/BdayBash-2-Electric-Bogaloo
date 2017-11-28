@@ -71,7 +71,7 @@
 						<form [formGroup]="inputFormDec">
 						    <ion-item>
 						            <ion-label floating>Dein Ergebnis</ion-label>
-						            <ion-input id="messagearea" formControlName="score" type="string" [disabled]="!isRepeatable"></ion-input>
+						            <ion-input formControlName="score" type="string" [disabled]="!isRepeatable"></ion-input>
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
@@ -87,7 +87,7 @@
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
-						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore('val')">Absenden</button>						 	
+						    <button id="messagearea" ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore('val')">Absenden</button>						 	
 						</form>	
 				</div>	
 
