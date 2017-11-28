@@ -20,7 +20,7 @@
 	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> 
 		<ion-slide overflow-scroll="true">
 			<p text-start [innerHTML]="game.instructions"></p> 
-			<div ngSwitch="{{game.gametype}}">
+			<div ngSwitch="{{game.gametype}}" overflow-scroll="true">
 
 					<div *ngSwitchDefault>
 					<form [formGroup]="inputForm">
