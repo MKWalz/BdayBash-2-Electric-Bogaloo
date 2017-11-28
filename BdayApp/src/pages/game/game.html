@@ -18,9 +18,9 @@
 <ion-content  padding>
 	
 	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> 
-		<ion-slide overflow-scroll="true">
+		<ion-slide>
 			<p text-start [innerHTML]="game.instructions"></p> 
-			<div ngSwitch="{{game.gametype}}" overflow-scroll="true">
+			<div ngSwitch="{{game.gametype}}">
 
 					<div *ngSwitchDefault>
 					<form [formGroup]="inputForm">
