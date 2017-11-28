@@ -569,7 +569,7 @@ var HomePage = (function () {
 }());
 HomePage = __decorate([
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
-        selector: 'page-home',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Let the Games begin</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content text-center padding>\n  <h3>Willkommen {{username}}</h3>\n\n<p [innerHTML]="menuPic"></p> \n<p [innerHTML]="menuTxt"></p> \n\n  <button ion-button secondary menuToggle>&Ouml;ffne Men&uuml;</button>\n</ion-content>\n'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/
+        selector: 'page-home',template:/*ion-inline-start:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <button ion-button menuToggle>\n      <ion-icon name="menu"></ion-icon>\n    </button>\n    <ion-title>Let the Games begin</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <h3>Willkommen {{username}}</h3>\n\n<p [innerHTML]="menuPic"></p> \n<p [innerHTML]="menuTxt"></p> \n\n  <button ion-button secondary menuToggle>&Ouml;ffne Men&uuml;</button>\n</ion-content>\n'/*ion-inline-end:"/Users/maico/BdayBash/BdayApp/src/pages/home/home.html"*/
     }),
     __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["i" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["j" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2_gl_ionic2_env_configuration__["a" /* EnvConfigurationProvider */]])
 ], HomePage);
