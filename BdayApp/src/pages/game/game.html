@@ -17,7 +17,7 @@
 
 <ion-content  padding>
 	
-	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> 
+	<ion-slides style="height: auto" #arrowNav (ionSlideDidChange)="slideChanged()"> 
 		<ion-slide>
 			<p text-start [innerHTML]="game.instructions"></p> 
 			<div ngSwitch="{{game.gametype}}">
@@ -87,7 +87,7 @@
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
-						    <button id="messagearea" ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore('val')">Absenden</button>						 	
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore('val')">Absenden</button>						 	
 						</form>	
 				</div>	
 
@@ -176,16 +176,3 @@
 
   </ion-toolbar>
 </ion-footer>
-
-  <script>
-      setInterval(function(){
-      if( document.body.className.match('keyboard-open') ) {
-      document.getElementById("messagearea").style.marginBottom="100px";
-      }
-                  else{
-                     document.getElementById("messagearea").style.marginBottom="0px";
-                  }
-  
-                  }, 1000);
-
-  </script>
