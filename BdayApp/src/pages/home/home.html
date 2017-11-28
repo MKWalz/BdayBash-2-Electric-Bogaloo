@@ -11,7 +11,20 @@
   <h3>Willkommen {{username}}</h3>
 
 <p [innerHTML]="menuPic"></p> 
-<p [innerHTML]="menuTxt"></p> 
+<p id="messagearea" [innerHTML]="menuTxt"></p> 
 
   <button ion-button secondary menuToggle>&Ouml;ffne Men&uuml;</button>
 </ion-content>
+
+  <script>
+      setInterval(function(){
+      if( document.body.className.match('keyboard-open') ) {
+      document.getElementById("messagearea").style.marginBottom="100px";
+      }
+                  else{
+                     document.getElementById("messagearea").style.marginBottom="0px";
+                  }
+  
+                  }, 1000);
+
+  </script>
