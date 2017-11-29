@@ -25,7 +25,7 @@ export class GamePage {
   username:"";
 
   //time variables
-  time: int = 0;
+  time = 0;
   durationRAW:int = 0;
   interval:"";
   isCounting : boolean = false;
