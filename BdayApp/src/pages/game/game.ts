@@ -510,6 +510,8 @@ if(!this.isCounting){
     
   }
 
+//add category
+
 
 
 }

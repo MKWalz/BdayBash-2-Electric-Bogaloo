@@ -4,7 +4,7 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>{{game.name}}</ion-title>
+    <ion-title text-wrap>{{game.name}}</ion-title>
     <ion-buttons end>
 <button (click)="goHome()">
 <ion-icon name="home" [ngClass]="'bigbutton'"></ion-icon>
@@ -15,7 +15,7 @@
 </ion-header>
 
 
-<ion-content  padding>
+<ion-content padding>
 	
 	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> 
 		<ion-slide>
