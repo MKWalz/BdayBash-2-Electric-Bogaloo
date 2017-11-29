@@ -29,7 +29,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 var GamePage = (function () {
     function GamePage(navCtrl, navParams, restProvider, cookieProvider, formBuilder, alertCtrl, toastCtrl) {
-        var _this = this;
         this.navCtrl = navCtrl;
         this.navParams = navParams;
         this.restProvider = restProvider;
@@ -37,7 +36,6 @@ var GamePage = (function () {
         this.formBuilder = formBuilder;
         this.alertCtrl = alertCtrl;
         this.toastCtrl = toastCtrl;
-        this.isKeyboardHide = false;
         this.cookie = "";
         //time variables
         this.time = 0;
@@ -60,18 +58,6 @@ var GamePage = (function () {
             helpscore: '',
             game_id: '',
             player_id: '',
-        });
-        Keyboard.onKeyboardShow().subscribe(function () {
-            _this.isKeyboardHide = false;
-            setTimeout(function () {
-                _this.content.resize();
-            }, 100);
-        });
-        Keyboard.onKeyboardHide().subscribe(function () {
-            _this.isKeyboardHide = true;
-            setTimeout(function () {
-                _this.content.resize();
-            }, 100);
         });
         this.refreshCurrentScore();
         if (this.cookie != "") {

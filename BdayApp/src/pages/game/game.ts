@@ -17,7 +17,7 @@ export class GamePage {
 
   @ViewChild('arrowNav') arrowNav: any; 
   @ViewChild(Content) content: Content;
-  isKeyboardHide: boolean = false;
+
 
 	game:{'id','gametype', 'sort_direction', 'repeatable'};
 	inputForm: FormGroup;
@@ -65,19 +65,6 @@ export class GamePage {
         player_id : '',
     });
 
-  Keyboard.onKeyboardShow().subscribe(() => {
-   this.isKeyboardHide = false;
-   setTimeout(() => { // this to make sure that angular's cycle performed and the footer removed from the DOM before resizing
-      this.content.resize();
-   }, 100);
-  });
-
-Keyboard.onKeyboardHide().subscribe(() => {
-   this.isKeyboardHide = true;
-   setTimeout(() => { // this to make sure that angular's cycle performed and the footer removed from the DOM before resizing
-      this.content.resize();
-   }, 100);
-});
 
     this.refreshCurrentScore();
 
