@@ -1,5 +1,5 @@
 
-<ion-header *ngIf="showToolbar">
+<ion-header>
   	  <ion-navbar hideBackButton>
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
@@ -79,13 +79,13 @@
 						</form>
 					</div>	
 					
-				<div ion-fixed *ngSwitchCase="'value'" [ngClass]="'value'">
+				<div *ngSwitchCase="'value'" [ngClass]="'value'">
 					Testwert
 						<form [formGroup]="inputForm">
 						    <ion-item>
 						    		
 						            <ion-label floating>Dein Ergebnis</ion-label>
-						            <ion-input (tap)="testInput()" formControlName="score" type="string"></ion-input>
+						            <ion-input formControlName="score" type="string"></ion-input>
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
@@ -154,7 +154,7 @@
 
 
 
-<ion-footer *ngIf="showToolbar">
+<ion-footer>
   <ion-toolbar>
     <ion-title>Dein aktuelles Ergebnis: {{cookie}}</ion-title>
 <div *ngIf="game.live == 1 ">

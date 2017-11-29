@@ -25525,3 +25525,7 @@ page-game ion-fixed {
   height: 100%;
   width: 100%;
 }
+
+page-game ion-slides {
+  height: auto;
+}
