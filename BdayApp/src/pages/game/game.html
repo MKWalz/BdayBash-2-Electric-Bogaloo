@@ -85,7 +85,7 @@
 						    <ion-item>
 						    		
 						            <ion-label floating>Dein Ergebnis</ion-label>
-						            <ion-input (click)="testInput($event)" formControlName="score" type="string"></ion-input>
+						            <ion-input (tap)="testInput()" formControlName="score" type="string"></ion-input>
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>

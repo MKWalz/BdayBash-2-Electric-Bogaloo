@@ -155,9 +155,8 @@ postScore(type){
 
  }
 
- testInput(input){
+ testInput(){
   console.log("trigger");
-  console.log(input);
     this.showToolbar = !this.showToolbar;
     this.content.resize();
 
