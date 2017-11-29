@@ -13,6 +13,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   selector: 'page-game',
   templateUrl: 'game.html',
 })
+
 export class GamePage {
 
   @ViewChild('arrowNav') arrowNav: any; 
