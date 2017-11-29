@@ -11,7 +11,6 @@
       <button menuClose ion-item *ngFor="let page of pages; let i = index" (click)="openGamePage($event, page)">
         {{page.game_nr}}. {{page.name}} <ion-icon *ngIf="finished[i] == 1 " name="checkmark"></ion-icon>
       </button>
-
     </ion-list>
   </ion-content>
 
