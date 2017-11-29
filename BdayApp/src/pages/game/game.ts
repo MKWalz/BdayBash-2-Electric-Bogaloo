@@ -65,6 +65,10 @@ export class GamePage {
         game_id : '',
         player_id : '',
     });
+
+      window.addEventListener('native.keyboardshow', function(){
+    document.body.classList.add('keyboard-open');
+  });
     this.refreshCurrentScore();
 
     if(this.cookie != ""){ //keep buttons disabled after changeing back to list
