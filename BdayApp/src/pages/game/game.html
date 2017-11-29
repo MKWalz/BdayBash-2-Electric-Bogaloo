@@ -1,5 +1,5 @@
 
-<ion-header>
+<ion-header *ngIf="showToolbar">
   	  <ion-navbar hideBackButton>
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
@@ -152,7 +152,7 @@
 
 
 
-<ion-footer *ngIf="isKeyboardHide">
+<ion-footer *ngIf="showToolbar">
   <ion-toolbar>
     <ion-title>Dein aktuelles Ergebnis: {{cookie}}</ion-title>
 <div *ngIf="game.live == 1 ">

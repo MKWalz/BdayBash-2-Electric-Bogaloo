@@ -17,7 +17,7 @@ export class GamePage {
 
   @ViewChild('arrowNav') arrowNav: any; 
   @ViewChild(Content) content: Content;
-
+  showToolbar : boolean = false;
 
 	game:{'id','gametype', 'sort_direction', 'repeatable'};
 	inputForm: FormGroup;
@@ -64,8 +64,6 @@ export class GamePage {
         game_id : '',
         player_id : '',
     });
-
-
     this.refreshCurrentScore();
 
     if(this.cookie != ""){ //keep buttons disabled after changeing back to list
@@ -217,7 +215,8 @@ postBool(){
 //Time-Operation
 
  startTimer() {
-
+    this.showToolbar = !this.showToolbar;
+    this.content.resize();
 
 if(!this.isCounting && this.timeTxt != "Nochmal?"){
  this.stopwatch();
