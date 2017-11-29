@@ -16,16 +16,17 @@
 
 
 <ion-content padding>
-	  <ion-fab top center edge>
-    <button ion-fab mini><ion-icon name="arrow-dropdown"></ion-icon></button>
-    <ion-fab-list>
+
+<ion-fab top left edge>
+    <button ion-fab mini color="light"><ion-icon name="arrow-dropdown"></ion-icon></button>
+  <ion-fab-list>
 	<ion-card>
-	<ion-card-header>
-    {{game.category}}
-  	</ion-card-header>
-</ion-card>
-    </ion-fab-list>
-  </ion-fab>
+		<ion-card-header>
+	    {{game.category}}
+	  	</ion-card-header>
+	</ion-card>
+   </ion-fab-list>
+ </ion-fab>
 	
 	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> 
 		<ion-slide>
@@ -41,7 +42,7 @@
 
 						    <ion-item>
 								<ion-label floating>Dein Ergebnis</ion-label>
-								<ion-input formControlName="score" type="string"></ion-input>
+								<ion-input (ionFocus)="changeFooter()" (ionBlur)="changeFooter()" formControlName="score" type="string"></ion-input>
 							</ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
@@ -65,7 +66,7 @@
 						<form [formGroup]="inputForm">
 
 						    <ion-item>
-						            <ion-label floating>Dein Ergebnis</ion-label>
+						            <ion-label floating>Deine Zeit</ion-label>
 						            <ion-input formControlName="score" type="string" disabled="true" value="{{time}}"></ion-input>
 						    </ion-item>
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
@@ -81,7 +82,7 @@
 						<form [formGroup]="inputFormDec">
 						    <ion-item>
 						            <ion-label floating>Dein Ergebnis</ion-label>
-						            <ion-input formControlName="score" type="string" [disabled]="!isRepeatable"></ion-input>
+						            <ion-input (ionFocus)="changeFooter()" (ionBlur)="changeFooter()" formControlName="score" type="string" [disabled]="!isRepeatable"></ion-input>
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
@@ -90,7 +91,6 @@
 					</div>	
 					
 				<div *ngSwitchCase="'value'" [ngClass]="'value'">
-					Testwert
 						<form [formGroup]="inputForm">
 						    <ion-item>
 						    		
@@ -114,7 +114,7 @@
 							
 					<ion-item>
 						<ion-label floating>Dein Ergebnis</ion-label>
-						<ion-input formControlName="score" type="string"></ion-input>
+						<ion-input (ionFocus)="changeFooter()" (ionBlur)="changeFooter()" formControlName="score" type="string"></ion-input>
 					</ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
@@ -149,8 +149,9 @@
 
 			<ion-list>
 				<ion-item *ngFor="let score of scores; let i = index">
-				 <ion-icon *ngIf="username == score.name" name="contact"></ion-icon>
+				 
 			      {{i+1}}. {{score.name}} - {{score.pivot.value}}
+			      <ion-icon *ngIf="username == score.name" name="contact"></ion-icon>
 			    </ion-item>  
 		  	</ion-list>
 		  	<ion-buttons>
