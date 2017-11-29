@@ -7,22 +7,7 @@
   </ion-header>
 
   <ion-content>
-    <ion-list>
-      <ion-item-sliding>
-  <ion-item> Item 1 </ion-item>
-  <ion-item-options side="left">
-    <button>Mail</button>
-  </ion-item-options>
-  <ion-item-options side="right" (ionSwipe)="saveItem(item)">
-    <button danger>
-      Trash
-    </button>  
-    <button secondary expandable (click)="saveItem(item)">  
-       Save
-    </button>  
-  </ion-item-options> 
-</ion-item-sliding>
-      
+    <ion-list>     
       <button menuClose ion-item *ngFor="let page of pages; let i = index" (click)="openGamePage($event, page)">
         {{page.game_nr}}. {{page.name}} <ion-icon *ngIf="finished[i] == 1 " name="checkmark"></ion-icon>
       </button>
