@@ -159,14 +159,12 @@ postScore(type){
 
  }
 
- testInput(){
-  console.log("trigger");
+ changeFooter() {
   this.showToolbar = !this.showToolbar;
   this.content.resize();
-
-
-
  }
+
+
 postBool(){
       //Send Data
       console.log(this.game.id);
