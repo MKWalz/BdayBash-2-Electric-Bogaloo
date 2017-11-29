@@ -1,4 +1,5 @@
 import { Component,ViewChild } from '@angular/core';
+import { Content } from 'ionic-angular';
 import { IonicPage, NavController, NavParams, AlertController, ToastController } from 'ionic-angular'; 
 //AlertController for the AlertBox
 
@@ -15,7 +16,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class GamePage {
 
   @ViewChild('arrowNav') arrowNav: any; 
-  
+  @ViewChild(Content) content: Content;
+  isKeyboardHide: boolean = false;
 
 	game:{'id','gametype', 'sort_direction', 'repeatable'};
 	inputForm: FormGroup;
@@ -62,6 +64,21 @@ export class GamePage {
         game_id : '',
         player_id : '',
     });
+
+  Keyboard.onKeyboardShow().subscribe(() => {
+   this.isKeyboardHide = false;
+   setTimeout(() => { // this to make sure that angular's cycle performed and the footer removed from the DOM before resizing
+      this.content.resize();
+   }, 100);
+  });
+
+Keyboard.onKeyboardHide().subscribe(() => {
+   this.isKeyboardHide = true;
+   setTimeout(() => { // this to make sure that angular's cycle performed and the footer removed from the DOM before resizing
+      this.content.resize();
+   }, 100);
+});
+
     this.refreshCurrentScore();
 
     if(this.cookie != ""){ //keep buttons disabled after changeing back to list
@@ -213,6 +230,7 @@ postBool(){
 //Time-Operation
 
  startTimer() {
+
 
 if(!this.isCounting && this.timeTxt != "Nochmal?"){
  this.stopwatch();
