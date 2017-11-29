@@ -1,4 +1,4 @@
-import { Component,ViewChild } from '@angular/core';
+import { Component,ViewChild, Input } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { IonicPage, NavController, NavParams, AlertController, ToastController } from 'ionic-angular'; 
 //AlertController for the AlertBox
@@ -17,7 +17,8 @@ export class GamePage {
 
   @ViewChild('arrowNav') arrowNav: any; 
   @ViewChild(Content) content: Content;
-  showToolbar : boolean = false;
+  @ViewChild('input') myInput ;
+  showToolbar : boolean = true;
 
 	game:{'id','gametype', 'sort_direction', 'repeatable'};
 	inputForm: FormGroup;
@@ -153,6 +154,16 @@ postScore(type){
       });
 
  }
+
+ testInput(input){
+  console.log("trigger");
+  console.log(input);
+    this.showToolbar = !this.showToolbar;
+    this.content.resize();
+
+
+
+ }
 postBool(){
       //Send Data
       console.log(this.game.id);
@@ -215,8 +226,7 @@ postBool(){
 //Time-Operation
 
  startTimer() {
-    this.showToolbar = !this.showToolbar;
-    this.content.resize();
+
 
 if(!this.isCounting && this.timeTxt != "Nochmal?"){
  this.stopwatch();

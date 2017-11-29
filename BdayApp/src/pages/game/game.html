@@ -80,10 +80,12 @@
 					</div>	
 					
 				<div ion-fixed *ngSwitchCase="'value'" [ngClass]="'value'">
+					Testwert
 						<form [formGroup]="inputForm">
 						    <ion-item>
+						    		
 						            <ion-label floating>Dein Ergebnis</ion-label>
-						            <ion-input formControlName="score" type="string"></ion-input>
+						            <ion-input (click)="testInput($event)" formControlName="score" type="string"></ion-input>
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
