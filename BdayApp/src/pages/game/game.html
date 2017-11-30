@@ -4,7 +4,7 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title text-wrap>{{game.name}}</ion-title>
+    <ion-title text-wrap>{{game.name}}<span style="display:block;font-size:0.5em;">Testo ding</span></ion-title>
     <ion-buttons end>
 <button (click)="goHome()">
 <ion-icon name="home" [ngClass]="'bigbutton'"></ion-icon>
@@ -12,6 +12,10 @@
 </ion-buttons>
   </ion-navbar>
 
+<!--     <ion-toolbar>
+    <ion-title>I'm a subheader</ion-title>
+  </ion-toolbar>
+ -->
 </ion-header>
 
 
@@ -42,7 +46,7 @@
 
 						    <ion-item>
 								<ion-label floating>Dein Ergebnis</ion-label>
-								<ion-input (ionFocus)="changeFooter()" (ionBlur)="changeFooter()" formControlName="score" type="string"></ion-input>
+								<ion-input (ionFocus)="changeFooter(true)" (ionBlur)="changeFooter(false)" formControlName="score" type="string"></ion-input>
 							</ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>

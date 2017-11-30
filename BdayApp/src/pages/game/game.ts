@@ -67,16 +67,15 @@ export class GamePage {
         player_id : '',
     });
 
-      window.addEventListener('native.keyboardshow', function(){
-    document.body.classList.add('keyboard-open');
-  });
     this.refreshCurrentScore();
 
     if(this.cookie != ""){ //keep buttons disabled after changeing back to list
       this.checkRepeatable(); 
     }
     this.checkForSpecialGame(this.game.gametype);
-    this.audio = new Audio('assets/audio/sound2.mp3');
+    // this.audio = new Audio('assets/audio/sound2.mp3');
+    this.audio = document.createElement('audio');
+    this.audio.src = 'assets/audio/sound2.mp3'
     
   }
 
@@ -160,10 +159,10 @@ postScore(type){
 
  }
 
- changeFooter() {
-  this.showToolbar = !this.showToolbar;
-  this.content.resize();
- }
+ // changeFooter(var) {
+ //  this.showToolbar = var;
+ //  this.content.resize();
+ // }
 
 
 postBool(){
@@ -381,7 +380,7 @@ checkForSpecialGame(gametype){
           this.time = this.timeFormat(0);
           break;
       case "count1":
-          this.specialVar = 2;
+          this.specialVar = 1;
           this.time = this.timeFormat(this.specialVar * 60);
           break;
       case "count2":
