@@ -4,7 +4,7 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title text-wrap>{{game.name}}<span style="display:block;font-size:0.5em;">{{game.category}}</span></ion-title>
+    <ion-title text-wrap>{{game.name}} <span style="display:block;font-size:0.5em;">{{game.category}}</span></ion-title>
     <ion-buttons end>
 <button (click)="goHome()">
 <ion-icon name="home" [ngClass]="'bigbutton'"></ion-icon>
@@ -22,7 +22,7 @@
 			<div ngSwitch="{{game.gametype}}">
 
 					<div *ngSwitchDefault>
-					<form [formGroup]="inputForm">
+					<form [formGroup]="inputForm" (ngSubmit)="postScore('val')">
 						    <ion-item>
 						            <ion-label floating>Deine Restzeit</ion-label>
 						            <ion-input formControlName="helpscore" type="string" disabled="true" value="{{time}}"></ion-input>
@@ -35,8 +35,9 @@
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
 							
-							<button ion-button full color="primary" [disabled]="!isRepeatable" (click)="countDown()">{{timeTxt}}</button>		
-						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore('val')" [disabled]="!canSend">Absenden</button>	
+							<button ion-button full color="primary" [disabled]="!isRepeatable" (click)="countDown()" type="button">{{timeTxt}}</button>		
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" 
+						    [disabled]="!canSend" type="submit">Absenden</button>	
 
 						    				 	
 					</form>
@@ -92,7 +93,7 @@
 				</div>	
 
 				<div *ngSwitchCase="'coin'" [ngClass]="'coin'">
-					<form [formGroup]="inputFormDec">
+					<form [formGroup]="inputFormDec" (ngSubmit)="postCoin()"> 
 					<ion-item>
 
 						<ion-label fixed>Deine Zeit</ion-label>
@@ -107,9 +108,9 @@
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
 
-						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()" type="button">{{timeTxt}}</button>
 
-						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postCoin()" [disabled]="!canSend">Absenden</button>	
+						    <button ion-button full color="primary" [disabled]="!isRepeatable" type="submit" [disabled]="!canSend">Absenden</button>	
 					 	
 					</form>
 				</div>
