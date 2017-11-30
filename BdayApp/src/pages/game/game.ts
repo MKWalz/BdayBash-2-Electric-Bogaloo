@@ -330,7 +330,7 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
 
     } else {
 
-  const bestTime = 30;
+  const bestTime = 36;
   const timePunish = 5 * 100;
   const bestScore = 4.21;
 
@@ -483,8 +483,7 @@ if(!this.isCounting){
       120
       );
 
-    let cookieFlag = 'value';
-    console.log('User created!');
+    let cookieFlag = 'set';
     this.events.publish('cookie:Event', cookieFlag);
     
     }

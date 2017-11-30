@@ -258,7 +258,7 @@ var GamePage = (function () {
             this.presentToast("Bitte ein Dezimal Fomat verwenden.");
         }
         else {
-            var bestTime = 30;
+            var bestTime = 36;
             var timePunish = 5 * 100;
             var bestScore = 4.21;
             var newScore = this.durationRAW;
@@ -375,8 +375,7 @@ var GamePage = (function () {
                 ck = this.timeFormat(this.durationRAW);
             }
             this.cookieProvider.setCookie("gamescoreID" + this.game.id, ck, 120);
-            var cookieFlag = 'value';
-            console.log('User created!');
+            var cookieFlag = 'set';
             this.events.publish('cookie:Event', cookieFlag);
         }
     };
