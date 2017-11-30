@@ -4,7 +4,7 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title text-wrap>{{game.name}}<span style="display:block;font-size:0.5em;">Testo ding</span></ion-title>
+    <ion-title text-wrap>{{game.name}}<span style="display:block;font-size:0.5em;">{{game.category}}</span></ion-title>
     <ion-buttons end>
 <button (click)="goHome()">
 <ion-icon name="home" [ngClass]="'bigbutton'"></ion-icon>
@@ -12,26 +12,10 @@
 </ion-buttons>
   </ion-navbar>
 
-<!--     <ion-toolbar>
-    <ion-title>I'm a subheader</ion-title>
-  </ion-toolbar>
- -->
 </ion-header>
 
 
 <ion-content padding>
-
-<ion-fab top left edge>
-    <button ion-fab mini color="light"><ion-icon name="arrow-dropdown"></ion-icon></button>
-  <ion-fab-list>
-	<ion-card>
-		<ion-card-header>
-	    {{game.category}}
-	  	</ion-card-header>
-	</ion-card>
-   </ion-fab-list>
- </ion-fab>
-	
 	<ion-slides #arrowNav (ionSlideDidChange)="slideChanged()"> 
 		<ion-slide>
 			<p text-start [innerHTML]="game.instructions"></p> 
@@ -86,7 +70,7 @@
 						<form [formGroup]="inputFormDec">
 						    <ion-item>
 						            <ion-label floating>Dein Ergebnis</ion-label>
-						            <ion-input (ionFocus)="changeFooter()" (ionBlur)="changeFooter()" formControlName="score" type="string" [disabled]="!isRepeatable"></ion-input>
+						            <ion-input (ionFocus)="changeFooter(true)" (ionBlur)="changeFooter(false)" formControlName="score" type="string" [disabled]="!isRepeatable"></ion-input>
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
@@ -99,7 +83,7 @@
 						    <ion-item>
 						    		
 						            <ion-label floating>Dein Ergebnis</ion-label>
-						            <ion-input (ionFocus)="changeFooter()" (ionBlur)="changeFooter()" formControlName="score" type="string"></ion-input>
+						            <ion-input (ionFocus)="changeFooter(true)" (ionBlur)="changeFooter(false)" formControlName="score" type="string"></ion-input>
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>

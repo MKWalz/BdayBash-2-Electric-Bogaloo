@@ -159,10 +159,10 @@ postScore(type){
 
  }
 
- // changeFooter(var) {
- //  this.showToolbar = var;
- //  this.content.resize();
- // }
+  changeFooter(x) {
+    this.showToolbar = !x;
+    this.content.resize();
+  }
 
 
 postBool(){
@@ -316,8 +316,9 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
     }
 
   afterPostActions(a){
+      this.changeFooter(false);
 
-      this.setCookieVar(a);
+      this.setCookieVar(a); 
       this.refreshCurrentScore();
       this.next();
       this.checkRepeatable(); 
@@ -380,7 +381,7 @@ checkForSpecialGame(gametype){
           this.time = this.timeFormat(0);
           break;
       case "count1":
-          this.specialVar = 1;
+          this.specialVar = 2;
           this.time = this.timeFormat(this.specialVar * 60);
           break;
       case "count2":
