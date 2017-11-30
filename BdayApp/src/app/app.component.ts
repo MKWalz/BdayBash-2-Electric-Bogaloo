@@ -1,10 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform, IonicApp, App, MenuController } from 'ionic-angular';
+import { Nav, Platform, IonicApp, App, MenuController, Events } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 //Pages
-import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
 import { GamePage } from '../pages/game/game';
 import { LoginPage } from '../pages/login/login';
 
@@ -29,7 +27,7 @@ export class MyApp {
 
 
   constructor(public platform: Platform, public statusBar: StatusBar,  public splashScreen: SplashScreen, private cookieProvider : CookieProvider, public restProvider: RestProvider,
-    private _app: App, private _ionicApp: IonicApp, private _menu: MenuController) {
+    private _app: App, private _ionicApp: IonicApp, private _menu: MenuController, public events: Events) {
     this.initializeApp();
     this.finished = [];
     this.restProvider.getGameData()
@@ -38,6 +36,12 @@ export class MyApp {
          this.pagesVar = response;
          this.arrayRun();
      });
+
+    //Test
+    events.subscribe('cookie:Event', (cookieFlag) => {
+    this.arrayRun();
+    this.pages = this.pagesVar;
+  });
     
 
   }
@@ -128,9 +132,9 @@ arrayRun(){
   }
 
 }
+//can be deleted
 menuOpened() {
-    this.arrayRun();
-    this.pages = this.pagesVar;
+
 }
   
 }

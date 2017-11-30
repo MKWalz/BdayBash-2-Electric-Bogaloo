@@ -1,6 +1,6 @@
 import { Component,ViewChild, Input } from '@angular/core';
 import { Content } from 'ionic-angular';
-import { IonicPage, NavController, NavParams, AlertController, ToastController } from 'ionic-angular'; 
+import { IonicPage, NavController, NavParams, AlertController, ToastController, Events } from 'ionic-angular'; 
 //AlertController for the AlertBox
 
 import { RestProvider } from'../../providers/rest/rest';
@@ -50,7 +50,7 @@ export class GamePage {
   //top5
   scores:{};
   constructor(public navCtrl: NavController, public navParams: NavParams, private restProvider : RestProvider, private cookieProvider : CookieProvider, public formBuilder:FormBuilder,
-  	public alertCtrl: AlertController, private toastCtrl: ToastController) {
+  	public alertCtrl: AlertController, private toastCtrl: ToastController , public events: Events) {
   	this.game = navParams.get('game');
   	//Form
   	this.inputForm = formBuilder.group({
@@ -227,8 +227,6 @@ postBool(){
 //Time-Operation
 
  startTimer() {
-
-
 if(!this.isCounting && this.timeTxt != "Nochmal?"){
  this.stopwatch();
 }else if(this.timeTxt == "Nochmal?" && !this.isCounting){
@@ -484,6 +482,10 @@ if(!this.isCounting){
       ck,
       120
       );
+
+    let cookieFlag = 'value';
+    console.log('User created!');
+    this.events.publish('cookie:Event', cookieFlag);
     
     }
 

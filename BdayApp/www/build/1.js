@@ -29,7 +29,7 @@ GamePageModule = __decorate([
             __WEBPACK_IMPORTED_MODULE_2__game__["a" /* GamePage */],
         ],
         imports: [
-            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["g" /* IonicPageModule */].forChild(__WEBPACK_IMPORTED_MODULE_2__game__["a" /* GamePage */]),
+            __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["h" /* IonicPageModule */].forChild(__WEBPACK_IMPORTED_MODULE_2__game__["a" /* GamePage */]),
         ],
     })
 ], GamePageModule);
