@@ -398,6 +398,8 @@ checkForSpecialGame(gametype){
 
 
 countDown(){
+  this.audio.play()
+  this.audio.pause()
 
 if(!this.isCounting){
 

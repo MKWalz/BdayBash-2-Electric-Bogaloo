@@ -304,6 +304,8 @@ var GamePage = (function () {
     };
     GamePage.prototype.countDown = function () {
         var _this = this;
+        this.audio.play();
+        this.audio.pause();
         if (!this.isCounting) {
             this.timeTxt = "Stopp";
             this.isCounting = true;
