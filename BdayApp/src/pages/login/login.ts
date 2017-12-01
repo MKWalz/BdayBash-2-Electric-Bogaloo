@@ -53,7 +53,7 @@ export class LoginPage {
     let input = this.inputUser.value.user;
 
     this.restProvider.checkUsername(input).subscribe((response)=> {
-    var fixTime = new Date("December 1, 2017 8:00:00");
+    var fixTime = new Date("December 2, 2017 21:00:00");
     var now = new Date();  
 
     if(response[0] == "exists" && now < fixTime){
