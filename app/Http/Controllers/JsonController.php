@@ -61,7 +61,7 @@ class JsonController extends Controller
 		}
 
 
-			public function set_json_score(Request $request){
+	public function set_json_score(Request $request){
 
 			$data = $request->json()->all();
 			$player = Player::where('name', $data['name'])->first();
@@ -112,28 +112,16 @@ class JsonController extends Controller
 		}
 
 
-	//handle Request to  set the score for the game
-	// public function set_json_score(Request $request){
 
 
-	// 		$data = $request->json()->all();
-	// 		$player = Player::where('name', $data['name'])->first();
+	public function get_ServerScore(Request $request){
 
-	// 		//check if there is already a entry
-
-	// 		if(!$player->game->contains($data['game_id'])){
-
-	// 			$player->game()->attach($data['game_id'], array('value' => $data['value']));
-	// 			return response(["Create New"],200);   
-			
-	// 		} else {
-
-	// 			$player->game()->updateExistingPivot($data['game_id'], array('value' => $data['value'])); 
-	// 			return response(["Update Old"],200); 
-			
-	// 		}
-
-	// 	}
+			$request = $request->name;
+			$player = Player::where('name', '=', $request)->first();			
+			$games = $player->game;
+		
+		return response()->json($games); 
+	}
 			
 
 }

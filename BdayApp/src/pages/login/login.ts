@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, Events } from 'ionic-angular';
 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -27,7 +27,7 @@ export class LoginPage {
 	inputUser: FormGroup;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private formBuilder:FormBuilder, private restProvider:RestProvider, private cookieProvider:CookieProvider,
-    private envConfiguration: EnvConfigurationProvider<ITestAppEnvConfiguration>, public alertCtrl: AlertController) {
+    private envConfiguration: EnvConfigurationProvider<ITestAppEnvConfiguration>, public alertCtrl: AlertController, public events: Events) {
     let config: ITestAppEnvConfiguration = envConfiguration.getConfig();
     this.loginTxt = config.loginTxt;
     this.loginPic = config.loginPic;
@@ -49,11 +49,14 @@ export class LoginPage {
   }
 
   setUser(){
+
     let input = this.inputUser.value.user;
 
     this.restProvider.checkUsername(input).subscribe((response)=> {
+    var fixTime = new Date("December 1, 2017 8:00:00");
+    var now = new Date();  
 
-    if(response[0] == "exists"){
+    if(response[0] == "exists" && now < fixTime){
 
       const alert = this.alertCtrl.create({
       title: 'Dieser Name ist bereits vergeben.',
@@ -63,15 +66,97 @@ export class LoginPage {
 
     alert.present();
 
+
+    } else if(response[0] == "exists" && now >= fixTime) {
+
+    let alert = this.alertCtrl.create({
+    title: 'Dieser Name ist bereits vergeben.',
+    subTitle: 'Bitte w&auml;hle einen anderen Namen.',
+    buttons: [
+      {
+        text: 'Verstanden',
+        role: 'cancel',
+        handler: () => {
+          console.log('Cancel clicked');
+        }
+      },
+      {
+        text: 'Das ist aber mein Name...',
+        handler: () => {
+        const alert2 = this.alertCtrl.create({
+        title: 'Dein Name ging wohl verloren.',
+        message: 'Aber keine Sorge. Deine Spielstände sind sicher und sollten gleich wieder da sein.',
+        buttons: ['Verstanden']
+        });
+        alert2.present();
+        //experimental
+        this.reloadCookies();
+
+        this.cookieProvider.setCookie("username",input, 20); //set Cookie, need for identification
+        this.navCtrl.setRoot(HomePage,{name : input}); //Push next site
+
+
+        }
+      }
+    ]
+  });
+  alert.present();
+
+
+
     } else {
       
       this.cookieProvider.setCookie("username",input, 20); //set Cookie, need for identification
       this.restProvider.postUser(input).subscribe(data =>console.log(data));//save Username in DB
       this.navCtrl.setRoot(HomePage,{name : input}); //Push next site
-      console.log(document.cookie); }
+      }
   
   });
 }
 
-}
 
+reloadCookies(){
+  let input = this.inputUser.value.user;
+  this.restProvider.getServerScore(input).subscribe((response)=> {
+        var ck;
+          for(var i = 0; i < response.length; i++) {
+
+          var obj = response[i];
+          console.log(obj.pivot.value);
+
+    if(obj.gametype == 'decimal'){
+    ck = Number(obj.pivot.value).toFixed(2);
+    } else if (obj.gametype== 'brave'){
+      ck = "Bestanden";
+    //case value: no decimal
+    } else if (obj.gametype == 'value' || obj.gametype == 'count1' || obj.gametype == 'count2'){
+      ck = Math.trunc(obj.pivot.value);
+    //case: decimal
+    } else if (obj.gametype== 'coin'){
+      ck = this.timeFormat(obj.pivot.value);
+    //case: decimal
+    }  else if (obj.gametype == 'minute'){
+      ck = obj.pivot.value;
+    //case: decimal
+    } else {
+      ck = this.timeFormat(obj.pivot.value);
+    }
+    this.cookieProvider.setCookie(
+      "gamescoreID"+obj.id,
+      ck,
+      120
+      );
+    
+    }
+    let cookieFlag = 'set';
+    this.events.publish('cookie:Event', cookieFlag);
+     });
+
+  }
+
+  timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = sec, and third = milisec 
+  var n = new Date(0,0);
+  n.setMilliseconds(+decimalTimeString * 60 * 1000);
+  return n.toTimeString().slice(0, 8);
+}
+}

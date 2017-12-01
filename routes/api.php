@@ -22,6 +22,9 @@ Route::get('/json', 'JsonController@get_json_gamelist');
 Route::post('/json', 'JsonController@set_json_player');
 Route::post('/json/player', 'JsonController@get_json_username');
 
+//experimental cookies
+Route::post('/json/serverScore', 'JsonController@get_ServerScore');
+
 //Top 5 Link
 Route::get('/json/score/{game}', 'JsonController@get_json_top5');
 //Reverse Display of the Top5

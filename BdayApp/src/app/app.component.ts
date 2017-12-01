@@ -132,7 +132,7 @@ arrayRun(){
   }
 
 }
-//can be deleted
+//canot be deleted
 menuOpened() {
 
 }

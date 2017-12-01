@@ -130,6 +130,26 @@ export class RestProvider {
 
   }
 
+    getServerScore(user) {
+    console.log("reload Value");
+    let varUrl = this.url+"/serverScore";
+
+    var headers = new Headers();
+    headers.append("Accept", 'application/json');
+    headers.append('Content-Type', 'application/json' );
+    let options = new RequestOptions({ headers: headers });
+ 
+    let postParams = { //change so you can post input
+      name: user
+    }
+    
+    return this.http.post(varUrl, postParams, options)
+    .map(this.extractData)
+    .do(this.logResponse)
+    .catch(this.catchError);
+
+  }
+
 
 
 

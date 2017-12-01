@@ -30,10 +30,10 @@
 
 						    <ion-item>
 								<ion-label floating>Dein Ergebnis</ion-label>
-								<ion-input (ionFocus)="changeFooter(true)" (ionBlur)="changeFooter(false)" formControlName="score" type="string"></ion-input>
+								<ion-input #myMap (ionFocus)="changeFooter(true)" (ionBlur)="changeFooter(false)" formControlName="score" type="string"></ion-input>
 							</ion-item>
 
-						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
+						    <ion-input formControlName="game_id" type="hidden"></ion-input>
 							
 							<button ion-button full color="primary" [disabled]="!isRepeatable" (click)="countDown()" type="button">{{timeTxt}}</button>		
 						    <button ion-button full color="primary" [disabled]="!isRepeatable" 
@@ -45,7 +45,7 @@
 					</div>
 
 					<div *ngSwitchCase="'brave'" [ngClass]="'brave'">
-						
+						<ion-input #myMap type="hidden" value="{{game.id}}"></ion-input>
 						<button ion-button round [disabled]="!isRepeatable" (click)="postBool()">Challenge erfolgreich bestanden!</button>
 						
 					</div>
@@ -58,7 +58,7 @@
 						            <ion-label floating>Deine Zeit</ion-label>
 						            <ion-input formControlName="score" type="string" disabled="true" value="{{time}}"></ion-input>
 						    </ion-item>
-						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
+						    <ion-input #myMap formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
 
 						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>
 
@@ -71,7 +71,7 @@
 						<form [formGroup]="inputFormDec">
 						    <ion-item>
 						            <ion-label floating>Dein Ergebnis</ion-label>
-						            <ion-input (ionFocus)="changeFooter(true)" (ionBlur)="changeFooter(false)" formControlName="score" type="string" [disabled]="!isRepeatable"></ion-input>
+						            <ion-input #myMap (ionFocus)="changeFooter(true)" (ionBlur)="changeFooter(false)" formControlName="score" type="string" [disabled]="!isRepeatable"></ion-input>
 						    </ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
@@ -103,7 +103,7 @@
 							
 					<ion-item>
 						<ion-label floating>Dein Ergebnis</ion-label>
-						<ion-input (ionFocus)="changeFooter()" (ionBlur)="changeFooter()" formControlName="score" type="string"></ion-input>
+						<ion-input #myMap (ionFocus)="changeFooter()" (ionBlur)="changeFooter()" formControlName="score" type="string"></ion-input>
 					</ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
@@ -120,7 +120,7 @@
 				<div *ngSwitchCase="'minute'" [ngClass]="'minute'">
 					<form [formGroup]="inputFormDec">
 
-						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
+						    <ion-input #myMap formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
 
 						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="startTimer()">{{timeTxt}}</button>
 

@@ -321,16 +321,9 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
       this.refreshCurrentScore();
       this.next();
       this.checkRepeatable(); 
-      console.log(this.myMap);
-      this.myMap.setBlur();
 
-      // var activeElement = this.inputFormDec.score;
-      // var activeElement2 = this.inputForm.score;
-      // console.log(activeElement);
-      // console.log(activeElement2);
-      // if (activeElement|| activeElement2) {
-      // activeElement.blur();
-      // activeElement2.blur();
+      this.myMap.setBlur();  
+     
       
   }
 
