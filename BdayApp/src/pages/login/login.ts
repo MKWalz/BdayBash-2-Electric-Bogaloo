@@ -33,7 +33,7 @@ export class LoginPage {
     this.loginPic = config.loginPic;
 
   	this.inputUser = formBuilder.group({
-        user: ['', Validators.compose([Validators.maxLength(16), Validators.pattern('[a-zA-Z ]*'), Validators.required])],
+        user: ['', Validators.compose([Validators.maxLength(16), Validators.required])],
     });
 
     //ignore Site, if Username has already been set
@@ -49,13 +49,15 @@ export class LoginPage {
   }
 
   setUser(){
+    if( !this.inputUser.valid){
+
+    } else {
 
     let input = this.inputUser.value.user;
 
     this.restProvider.checkUsername(input).subscribe((response)=> {
     var fixTime = new Date("December 2, 2017 21:00:00");
     var now = new Date();  
-
     if(response[0] == "exists" && now < fixTime){
 
       const alert = this.alertCtrl.create({
@@ -67,7 +69,7 @@ export class LoginPage {
     alert.present();
 
 
-    } else if(response[0] == "exists" && now >= fixTime) {
+    } else if(response[0] == "exists" && now > fixTime) {
 
     let alert = this.alertCtrl.create({
     title: 'Dieser Name ist bereits vergeben.',
@@ -112,6 +114,7 @@ export class LoginPage {
       }
   
   });
+  } 
 }
 
 

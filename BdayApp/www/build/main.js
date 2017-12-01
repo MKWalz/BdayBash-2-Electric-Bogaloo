@@ -467,7 +467,7 @@ var LoginPage = (function () {
         this.loginTxt = config.loginTxt;
         this.loginPic = config.loginPic;
         this.inputUser = formBuilder.group({
-            user: ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].maxLength(16), __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].pattern('[a-zA-Z ]*'), __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required])],
+            user: ['', __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].compose([__WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].maxLength(16), __WEBPACK_IMPORTED_MODULE_2__angular_forms__["f" /* Validators */].required])],
         });
         //ignore Site, if Username has already been set
         if (this.cookieProvider.hasUsernameCheck()) {
@@ -480,55 +480,59 @@ var LoginPage = (function () {
     };
     LoginPage.prototype.setUser = function () {
         var _this = this;
-        var input = this.inputUser.value.user;
-        this.restProvider.checkUsername(input).subscribe(function (response) {
-            var fixTime = new Date("December 2, 2017 21:00:00");
-            var now = new Date();
-            if (response[0] == "exists" && now < fixTime) {
-                var alert = _this.alertCtrl.create({
-                    title: 'Dieser Name ist bereits vergeben.',
-                    subTitle: 'Bitte w&auml;hle einen anderen Namen.',
-                    buttons: ['Verstanden']
-                });
-                alert.present();
-            }
-            else if (response[0] == "exists" && now >= fixTime) {
-                var alert = _this.alertCtrl.create({
-                    title: 'Dieser Name ist bereits vergeben.',
-                    subTitle: 'Bitte w&auml;hle einen anderen Namen.',
-                    buttons: [
-                        {
-                            text: 'Verstanden',
-                            role: 'cancel',
-                            handler: function () {
-                                console.log('Cancel clicked');
+        if (!this.inputUser.valid) {
+        }
+        else {
+            var input_1 = this.inputUser.value.user;
+            this.restProvider.checkUsername(input_1).subscribe(function (response) {
+                var fixTime = new Date("December 2, 2017 21:00:00");
+                var now = new Date();
+                if (response[0] == "exists" && now < fixTime) {
+                    var alert = _this.alertCtrl.create({
+                        title: 'Dieser Name ist bereits vergeben.',
+                        subTitle: 'Bitte w&auml;hle einen anderen Namen.',
+                        buttons: ['Verstanden']
+                    });
+                    alert.present();
+                }
+                else if (response[0] == "exists" && now > fixTime) {
+                    var alert = _this.alertCtrl.create({
+                        title: 'Dieser Name ist bereits vergeben.',
+                        subTitle: 'Bitte w&auml;hle einen anderen Namen.',
+                        buttons: [
+                            {
+                                text: 'Verstanden',
+                                role: 'cancel',
+                                handler: function () {
+                                    console.log('Cancel clicked');
+                                }
+                            },
+                            {
+                                text: 'Das ist aber mein Name...',
+                                handler: function () {
+                                    var alert2 = _this.alertCtrl.create({
+                                        title: 'Dein Name ging wohl verloren.',
+                                        message: 'Aber keine Sorge. Deine Spielstände sind sicher und sollten gleich wieder da sein.',
+                                        buttons: ['Verstanden']
+                                    });
+                                    alert2.present();
+                                    //experimental
+                                    _this.reloadCookies();
+                                    _this.cookieProvider.setCookie("username", input_1, 20); //set Cookie, need for identification
+                                    _this.navCtrl.setRoot(__WEBPACK_IMPORTED_MODULE_5__pages_home_home__["a" /* HomePage */], { name: input_1 }); //Push next site
+                                }
                             }
-                        },
-                        {
-                            text: 'Das ist aber mein Name...',
-                            handler: function () {
-                                var alert2 = _this.alertCtrl.create({
-                                    title: 'Dein Name ging wohl verloren.',
-                                    message: 'Aber keine Sorge. Deine Spielstände sind sicher und sollten gleich wieder da sein.',
-                                    buttons: ['Verstanden']
-                                });
-                                alert2.present();
-                                //experimental
-                                _this.reloadCookies();
-                                _this.cookieProvider.setCookie("username", input, 20); //set Cookie, need for identification
-                                _this.navCtrl.setRoot(__WEBPACK_IMPORTED_MODULE_5__pages_home_home__["a" /* HomePage */], { name: input }); //Push next site
-                            }
-                        }
-                    ]
-                });
-                alert.present();
-            }
-            else {
-                _this.cookieProvider.setCookie("username", input, 20); //set Cookie, need for identification
-                _this.restProvider.postUser(input).subscribe(function (data) { return console.log(data); }); //save Username in DB
-                _this.navCtrl.setRoot(__WEBPACK_IMPORTED_MODULE_5__pages_home_home__["a" /* HomePage */], { name: input }); //Push next site
-            }
-        });
+                        ]
+                    });
+                    alert.present();
+                }
+                else {
+                    _this.cookieProvider.setCookie("username", input_1, 20); //set Cookie, need for identification
+                    _this.restProvider.postUser(input_1).subscribe(function (data) { return console.log(data); }); //save Username in DB
+                    _this.navCtrl.setRoot(__WEBPACK_IMPORTED_MODULE_5__pages_home_home__["a" /* HomePage */], { name: input_1 }); //Push next site
+                }
+            });
+        }
     };
     LoginPage.prototype.reloadCookies = function () {
         var _this = this;
