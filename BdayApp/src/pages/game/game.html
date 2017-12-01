@@ -103,7 +103,7 @@
 							
 					<ion-item>
 						<ion-label floating>Dein Ergebnis</ion-label>
-						<ion-input #myMap (ionFocus)="changeFooter()" (ionBlur)="changeFooter()" formControlName="score" type="string"></ion-input>
+						<ion-input #myMap (ionFocus)="changeFooter(true)" (ionBlur)="changeFooter(false)" formControlName="score" type="string"></ion-input>
 					</ion-item>
 
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
