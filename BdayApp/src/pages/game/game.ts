@@ -1,4 +1,4 @@
-import { Component,ViewChild, Input } from '@angular/core';
+import { Component,ViewChild, ElementRef } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { IonicPage, NavController, NavParams, AlertController, ToastController, Events } from 'ionic-angular'; 
 //AlertController for the AlertBox
@@ -18,7 +18,8 @@ export class GamePage {
 
   @ViewChild('arrowNav') arrowNav: any; 
   @ViewChild(Content) content: Content;
-  @ViewChild('input') myInput ;
+  @ViewChild('myMap') myMap ;
+
   showToolbar : boolean = true;
 
 	game:{'id','gametype', 'sort_direction', 'repeatable'};
@@ -320,12 +321,17 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
       this.refreshCurrentScore();
       this.next();
       this.checkRepeatable(); 
+      console.log(this.myMap);
+      this.myMap.setBlur();
 
-      var activeElement = this.inputFormDec.score;
-      console.log(activeElement);
-      if (activeElement) {
-      activeElement.blur();
-      }
+      // var activeElement = this.inputFormDec.score;
+      // var activeElement2 = this.inputForm.score;
+      // console.log(activeElement);
+      // console.log(activeElement2);
+      // if (activeElement|| activeElement2) {
+      // activeElement.blur();
+      // activeElement2.blur();
+      
   }
 
 
