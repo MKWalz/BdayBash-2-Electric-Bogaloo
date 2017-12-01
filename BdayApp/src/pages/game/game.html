@@ -86,7 +86,7 @@
 						            <ion-label floating>Dein Ergebnis</ion-label>
 						            <ion-input (ionFocus)="changeFooter(true)" (ionBlur)="changeFooter(false)" formControlName="score" type="string"></ion-input>
 						    </ion-item>
-
+						    
 						    <ion-input formControlName="game_id" type="hidden" value="{{game.id}}"></ion-input>
 						    <button ion-button full color="primary" [disabled]="!isRepeatable" (click)="postScore('val')">Absenden</button>						 	
 						</form>	

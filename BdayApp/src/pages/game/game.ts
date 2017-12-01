@@ -75,7 +75,7 @@ export class GamePage {
     this.checkForSpecialGame(this.game.gametype);
     // this.audio = new Audio('assets/audio/sound2.mp3');
     this.audio = document.createElement('audio');
-    this.audio.src = 'assets/audio/sound2.mp3'
+    this.audio.src = 'assets/audio/sound2.mp3';
     
   }
 
@@ -320,6 +320,12 @@ timeFormat(decimalTimeString){ // Time formating, First 00 = min, secoond 00 = s
       this.refreshCurrentScore();
       this.next();
       this.checkRepeatable(); 
+
+      var activeElement = this.inputFormDec.score;
+      console.log(activeElement);
+      if (activeElement) {
+      activeElement.blur();
+      }
   }
 
 
